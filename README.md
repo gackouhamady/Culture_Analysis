@@ -25,4 +25,4 @@ Pour explorer la base de données, il faut télécharger MongoDB Compass et se c
 
 
 ## Configuration et Tests de Scripts Python avec PyMongo et Tâches Cron
-- Pour tout problème lié à PyMongo, vous pouvez créer directement un environnement virtuel Python. Dans cet environnement, vous pourrez tester les scripts Python, définir les tâches cron et leur attribuer un titre dans un fichier README.md
+- Pour tout problème lié à PyMongo, vous pouvez créer directement un environnement virtuel Python. Dans cet environnement, vous pourrez tester les scripts Python, définir la tâches cron ...  ci  dessus :  (0 */3 * * * /path/vers/crontab.sh)
