@@ -21,4 +21,4 @@ Pour explorer la base de données, il faut télécharger MongoDB Compass et se c
 
 ## Cron Job
 
-- 0 */3 * * * /path/vers/votre/dossier/crontab.sh
+- 0 */3 * * * /path/vers/crontab.sh
