@@ -7,10 +7,8 @@ from datetime import datetime
 client = MongoClient('mongodb+srv://hamadygackou777:root@cluster0.1lwk5.mongodb.net/')
 db = client['Dashboard_Data_Science']
 collection = db['economic_data']
-
 # Répertoire contenant les fichiers JSON
 directory = 'economic_data'
-
 # Fonction pour résumer les données
 def summarize_data(file_path):
     with open(file_path, 'r') as file:

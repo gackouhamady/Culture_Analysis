@@ -4,7 +4,7 @@ WORLD_BANK_URL="http://api.worldbank.org/v2/country/all/indicator/NY.GDP.MKTP.CD
 
 ECON_DIRECTORY="economic_data"
 
-mkdir -p "$ECON_DIRECTORY"
+mkdir -p "$ECON_DIRECTORY"   
 
 PAGE=1
 TOTAL_PAGES=1
