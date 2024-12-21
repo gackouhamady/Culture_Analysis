@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Exécution des scripts Bash toutes les 3 heures
-./economic_local_bash.sh
-./part_freq_concert_festival_bash.sh
-./performance_sportive_bash.sh
+economic_local/economic_local_bash.sh
+festival_concert/part_freq_concert_festival_bash.sh
+football/performance_sportive_bash.sh
 
 # Exécution des scripts Python toutes les 4 heures
-./summarize_economic_local.py
-./summarize_part_freq_concert_festival.py
-./summarize_performance_sportive.py
+economic_local/summarize_economic_local.py
+festival_concert/summarize_part_freq_concert_festival.py
+football/summarize_performance_sportive.py
