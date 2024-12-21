@@ -17,3 +17,8 @@ Pour explorer la base de données, il faut télécharger MongoDB Compass et se c
 
 - **db_username** : `user`  
 - **db_password** : `user`
+
+
+##Cron Job
+
+- 0 */3 * * * /path/vers/votre/dossier/crontab.sh
