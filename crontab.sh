@@ -2,6 +2,8 @@
 
 # Arrête le script en cas d'erreur
 set -e
+ 
+
 
 # Active l'environnement virtuel
 if [ -d "myvenv" ]; then
