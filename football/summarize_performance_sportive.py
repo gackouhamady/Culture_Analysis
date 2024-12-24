@@ -15,7 +15,6 @@ def summarize_data(file_path):
     with open(file_path, 'r') as file:
         data = json.load(file)
         
-        # Sélectionner les attributs pertinents
         summary = []
         for match in data['matches']:
             home_team = match['homeTeam']['name']
@@ -51,16 +50,13 @@ for filename in os.listdir(directory):
     if filename.endswith('.json'):
         file_path = os.path.join(directory, filename)
         
-        # Résumer les données
         summary = summarize_data(file_path)
         
-        # Insérer ou mettre à jour le résumé dans MongoDB
         for match in summary:
             query = {'home_team': match['home_team'], 'away_team': match['away_team'], 'date': match['date']}
             update = {'$set': match}
             collection.update_one(query, update, upsert=True)
         
-        # Supprimer le fichier après insertion/mise à jour
         os.remove(file_path)
 
 print("Données résumées et stockées dans MongoDB avec succès.")
