@@ -38,20 +38,29 @@ event, football, economy = load_data()
 
 # Sidebar navigation
 # Sidebar avec des icônes spécifiques
+import streamlit as st
+from streamlit_option_menu import option_menu
+
+
+
+
+
+# Personnalisation du sidebar
 with st.sidebar:
-   section = option_menu(
-    menu_title="Navigation",  # Titre du menu
-    options=["Rapport", "Accueil", "Événements culturels", "Données sportives", "Indicateurs économiques", "Analyse avancée"],  # Sections
-    icons=["file-alt", "home", "music", "futbol", "chart-line", "analytics"],  # Icônes correspondantes
-    menu_icon="list",  # Icône pour le menu global
-    default_index=0,  # Section par défaut
-    styles={
-        "container": {"padding": "5px", "background-color": "rgb(238,174,202);"},
-        "icon": {"color": "blue", "font-size": "18px"},  # Couleur et taille des icônes
-        "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "--hover-color": "#eee"},
-        "nav-link-selected": {"background-color": "#02ab21"},  # Couleur de sélection
-    },
-)
+    section = option_menu(
+        menu_title="Tableau de bord",  # Titre du menu
+        options=["Rapport", "Accueil", "Événements culturels", "Données sportives", "Indicateurs économiques", "Analyse avancée"],  # Sections
+        icons=["file-alt", "home", "music", "futbol", "chart-line", "analytics"],  # Icônes correspondantes
+        menu_icon="list",  # Icône pour le menu global
+        default_index=0,  # Section par défaut
+        styles={
+            "container": {"padding": "5px", "background-color": "#2E2E2E", "height": "100vh", "display": "flex", "flex-direction": "column", "justify-content": "center"},
+            "icon": {"color": "blue", "font-size": "18px"},  # Couleur et taille des icônes
+            "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "--hover-color": "#eee"},
+            "nav-link-selected": {"background-color": "#02ab21"},  # Couleur de sélection
+        },
+    )
+
 
 # Homepage
 # Sections
@@ -167,6 +176,68 @@ elif section == "Analyse avancée":
 
 
 
-# Footer
-st.sidebar.markdown("---")
-st.sidebar.markdown("Développé par Hamady Gackou")
+
+
+
+
+
+
+
+
+
+
+
+
+from datetime import datetime
+
+current_year = datetime.now().year
+
+footer = f"""
+<style>
+footer {{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #2E2E2E;
+    text-align: center;
+    padding: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 0;
+}}
+footer a {{
+    color: #4CAF50;
+    text-decoration: none;
+    margin: 0 5px;
+    font-size: 24px;
+}}
+footer a:hover {{
+    text-decoration: underline;
+}}
+footer p {{
+    margin: 5px;
+    font-size: 14px; 
+}}
+footer .copyright {{
+    font-size: 12px;
+    color: #888;
+}}
+</style>
+<footer>
+    <p>
+        <a href="https://www.linkedin.com/in/hamady-gackou-687216251" target="_blank">
+            <i class="fa fa-linkedin"></i>
+        </a>
+        <a href="https://github.com/gackouhamady" target="_blank">
+            <i class="fa fa-github"></i>
+        </a>
+    </p>
+    <p class="copyright">&copy; {current_year} Hamady Gackou</p>
+</footer>
+"""
+
+# Affichage du footer
+st.markdown(footer, unsafe_allow_html=True)
