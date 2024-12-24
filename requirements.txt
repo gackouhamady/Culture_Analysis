@@ -1,0 +1,11 @@
+source myven/bin/activate
+
+streamlit
+pandas
+plotly
+pymongo
+python-dateutil
+streamlit-option-menu 
+
+
+###
