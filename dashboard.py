@@ -3,11 +3,12 @@ import pandas as pd
 import plotly.express as px
 import pymongo
 from datetime import datetime
+from dateutil import parser
 
 from streamlit_option_menu import option_menu
 
 # Set page configuration
-st.set_page_config(page_title="Dashboard Intégré", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Dashboard : Culture Analysis", page_icon="📊", layout="wide")
 
 # MongoDB connection setup
 @st.cache_resource
@@ -34,25 +35,44 @@ def load_data():
 
 event, football, economy = load_data()
 
+
 # Sidebar navigation
 # Sidebar avec des icônes spécifiques
 with st.sidebar:
-    section = option_menu(
-        menu_title="Navigation",  # Titre du menu
-        options=["Accueil", "Événements culturels", "Données sportives", "Indicateurs économiques"],  # Sections
-        icons=["house", "music", "trophy", "bar-chart"],  # Icônes correspondantes
-        menu_icon="list",  # Icône pour le menu global
-        default_index=0,  # Section par défaut
-        styles={
-            "container": {"padding": "5px", "background-color": "#f0f2f6"},
-            "icon": {"color": "blue", "font-size": "18px"},  # Couleur et taille des icônes
-            "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "--hover-color": "#eee"},
-            "nav-link-selected": {"background-color": "#02ab21"},  # Couleur de sélection
-        },
-    )
+   section = option_menu(
+    menu_title="Navigation",  # Titre du menu
+    options=["Rapport", "Accueil", "Événements culturels", "Données sportives", "Indicateurs économiques", "Analyse avancée"],  # Sections
+    icons=["file-alt", "home", "music", "futbol", "chart-line", "analytics"],  # Icônes correspondantes
+    menu_icon="list",  # Icône pour le menu global
+    default_index=0,  # Section par défaut
+    styles={
+        "container": {"padding": "5px", "background-color": "rgb(238,174,202);"},
+        "icon": {"color": "blue", "font-size": "18px"},  # Couleur et taille des icônes
+        "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "--hover-color": "#eee"},
+        "nav-link-selected": {"background-color": "#02ab21"},  # Couleur de sélection
+    },
+)
 
 # Homepage
 # Sections
+if section == "Rapport":
+    st.title("📄 Rapport du Projet ")
+    st.markdown("###  Analyse et Visualisation des Données Multi-Sectorielles : Événements, Sports et Économie")
+
+    # Fournir le chemin ou le lien vers le fichier Markdown
+    markdown_file_path = "README.md"  
+
+    try:
+        # Lire et afficher le contenu du fichier Markdown
+        with open(markdown_file_path, "r", encoding="utf-8") as file:
+            markdown_content = file.read()
+        st.markdown(markdown_content)
+    except FileNotFoundError:
+        st.error("Le fichier Markdown spécifié n'a pas été trouvé.")
+    except Exception as e:
+        st.error(f"Une erreur s'est produite lors du chargement du fichier Markdown : {e}")
+
+
 if section == "Accueil":
     st.title("🏠 Accueil")
     st.write("Bienvenue sur le tableau de bord intégré.")
@@ -63,23 +83,10 @@ if section == "Accueil":
     col2.metric("Matches sportifs", len(football))
     col3.metric("Données économiques", len(economy))
 
-    st.markdown("#### Carte des événements")
-    all_events = pd.concat([
-        event[["venue", "city", "country", "date"]].assign(type="event"),
-        football[["home_team", "away_team", "date", "competition"]].rename(columns={"home_team": "venue"}).assign(type="Football")
-    ])
-
-    all_events["date"] = pd.to_datetime(all_events["date"])
-    event_map = px.scatter_geo(
-        all_events, locations="country", locationmode="country names",
-        hover_name="venue", size_max=15, color="type",
-        title="Répartition des événements"
-    )
-    st.plotly_chart(event_map)
 
 # Cultural Events Section
 elif section == "Événements culturels":
-    st.title("🎵 Événements culturels")
+    st.title("🎫 Événements culturels")
     st.write("Analyse des événements.")
     # Ajouter les graphiques et visualisations pour les événements culturels ici.
 
@@ -128,6 +135,37 @@ elif section == "Indicateurs économiques":
     st.markdown("### Distribution des indicateurs")
     fig_dist = px.box(economy, x="indicator", y="value", color="indicator")
     st.plotly_chart(fig_dist)
+
+elif section == "Analyse avancée":
+    st.title("🔍 Analyse avancée")
+    st.write("Analyse approfondie des données.")
+
+    st.markdown("### Corrélation entre les variables")
+    if not economy.empty:
+        # Sélectionner uniquement les colonnes numériques
+        numeric_cols = economy.select_dtypes(include=[float, int])
+        corr_matrix = numeric_cols.corr()
+        fig_corr = px.imshow(
+            corr_matrix,
+            title="Matrice de corrélation des indicateurs économiques",
+            labels=dict(color="Corrélation"),
+            x=corr_matrix.columns,
+            y=corr_matrix.columns,
+            color_continuous_scale='RdBu_r',
+            zmin=-1, zmax=1
+        )
+        st.plotly_chart(fig_corr)
+
+    st.markdown("### Analyse de régression")
+    if not economy.empty:
+        fig_regression = px.scatter(
+            economy, x="date", y="value", color="indicator",
+            trendline="ols",  # Ajout de la ligne de tendance
+            title="Analyse de régression des indicateurs économiques"
+        )
+        st.plotly_chart(fig_regression)
+
+
 
 # Footer
 st.sidebar.markdown("---")
