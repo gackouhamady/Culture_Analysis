@@ -385,12 +385,12 @@ for filename in os.listdir(directory):
 print("Données économiques traitées et stockées dans MongoDB avec succès.")
 
 ```
-## Fichier Crontab : 
+## Fichier Chron : 
 ``` bash 
 #!/bin/bash
 
  # Active l'environnement virtuel 
-source  source myvenv/bin/activate
+source myvenv/bin/activate
 
 # Exécution des scripts Bash toutes les 3 heures
 
@@ -404,7 +404,7 @@ python event/summarize_event.py.py
 python football/summarize_performance_sportive.py
 
 ```
-## Cron Job :  
+## Cron Job :  Automatisation du  fichier chron ci dessus 
 0 */3 * * *   crontab.sh >>  cron.log 2>&1
 
 
