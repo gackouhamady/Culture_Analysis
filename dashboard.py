@@ -49,7 +49,8 @@ from streamlit_option_menu import option_menu
 with st.sidebar:
     section = option_menu(
         menu_title="Tableau de bord",  # Titre du menu
-        options=["Rapport", "Accueil", "Événements culturels", "Données sportives", "Indicateurs économiques", "Analyse avancée"],  # Sections
+        options=["Rapport", "Accueil", "Événements culturels", "Données sportives", "Indicateurs économiques", "Analyse avancée"],  # Section
+        icons=["file", "house", "headphones", "trophy", "bar-chart", "graph-up"],  # Icônes correspondantes
         icons=["file-alt", "home", "music", "futbol", "chart-line", "analytics"],  # Icônes correspondantes
         menu_icon="list",  # Icône pour le menu global
         default_index=0,  # Section par défaut
