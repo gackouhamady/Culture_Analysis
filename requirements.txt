@@ -1,4 +1,3 @@
-source myven/bin/activate
 
 streamlit
 pandas
