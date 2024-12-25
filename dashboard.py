@@ -23,7 +23,7 @@ db = connect_to_mongo()
 @st.cache_data
 def load_data():
     event = pd.DataFrame(list(db["event"].find()))
-    football = pd.DataFrame(list(db["football_past_performance"].find()))
+    football = pd.DataFrame(list(db["football"].find()))
     economy = pd.DataFrame(list(db["economic_data"].find()))
     
     # Rename 'dates' column to 'date'
