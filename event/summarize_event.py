@@ -41,6 +41,7 @@ def summarize_data(file_path):
             relevant_attributes = {
                 'name': event_attributes.get('name'),
                 'type': event_attributes.get('type'),
+                'classificationName': event_attributes.get('classifications', [{}])[0].get('segment', {}).get('name', 'non précisé'),
                 'dates': event_attributes.get('dates', {}).get('start', {}).get('localDate'),
                 'venue': event_attributes.get('_embedded', {}).get('venues', [{}])[0].get('name'),
                 'city': event_attributes.get('_embedded', {}).get('venues', [{}])[0].get('city', {}).get('name'),
