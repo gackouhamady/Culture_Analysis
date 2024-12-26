@@ -12,7 +12,8 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 import plotly.graph_objects as go
 import geopy
 from geopy.geocoders import Nominatim
-
+import numpy as np
+ 
 
 
 # Set page configuration
@@ -369,6 +370,8 @@ elif section == "Analyse avancée":
     elif option == "Économie vs Football":
         st.markdown("### Impact des Performances Sportives sur l'Économie")
 
+       # Assuming 'economy' and 'football' DataFrames are already defined
+
         # Filtrage des données de football pour l'analyse des performances
         if 'football' in locals() and len(football) > 0:
             football['date'] = pd.to_datetime(football['date'])  # Assurer que les dates sont au format DateTime
@@ -376,8 +379,19 @@ elif section == "Analyse avancée":
             # Calculer l'impact des résultats des matchs sur le PIB (ici basé sur la performance de l'équipe)
             football["economic_impact"] = football.apply(lambda x: 1 if x["performance_home_team"] == "winner" else -1, axis=1)
 
+            # Convertir la colonne 'date' dans le DataFrame 'economy' au format datetime
+            economy['date'] = pd.to_datetime(economy['date'])
+
+
+            # Localiser les colonnes 'date' au fuseau horaire UTC
+            economy['date'] = economy['date'].dt.tz_localize('UTC', ambiguous='NaT', nonexistent='shift_forward')
+ 
+            # Convertir les colonnes 'date' au même fuseau horaire
+            economy['date'] = economy['date'].dt.tz_convert('UTC')
+            football['date'] = football['date'].dt.tz_convert('UTC')
+
             # Agréger les données économiques en fonction des performances sportives (impact positif ou négatif)
-            econ_with_football = economy.merge(football[['date', 'economic_impact']], left_on='date', right_on='date', how='left')
+            econ_with_football = economy.merge(football[['date', 'economic_impact']], on='date', how='left')
 
             fig_impact = px.line(
                 econ_with_football, 
@@ -436,12 +450,12 @@ elif section == "Analyse avancée":
     # ---------------------------- Prévisions économiques basées sur les événements à venir ----------------------------
 
     st.markdown("### Prévisions économiques basées sur les événements futurs")
-
     if not economy.empty:
-        # Appliquer une régression linéaire sur l'économie pour prédire les tendances futures
-        from sklearn.linear_model import LinearRegression
-
         # Filtrer les données économiques
+        
+        economy = economy.dropna(subset=['value'])  # Supprimer les lignes avec des valeurs manquantes
+        economy = economy[np.isfinite(economy['value'])]  # Garder seulement les valeurs finies
+
         economy['date'] = pd.to_datetime(economy['date'])
         economy['date_ordinal'] = economy['date'].apply(lambda x: x.toordinal())  # Convertir les dates en valeurs ordinales
 
@@ -449,19 +463,31 @@ elif section == "Analyse avancée":
         X = economy[['date_ordinal']]  # Données indépendantes (dates)
         y = economy['value']  # Valeurs à prédire
 
+                # Vérifier et nettoyer les données
+        if economy['value'].isnull().any() or not np.isfinite(economy['value']).all():
+            raise ValueError("Les données contiennent des valeurs manquantes ou infinies.")
+        
+
+        # Normaliser les valeurs du PIB
+        scaler = StandardScaler()
+        y_normalized = scaler.fit_transform(y.values.reshape(-1, 1))
+
         # Entraîner le modèle de régression linéaire
         model = LinearRegression()
-        model.fit(X, y)
+        model.fit(X, y_normalized)
 
         # Prédire les valeurs futures (par exemple, pour les 3 prochaines années)
         future_dates = pd.date_range(start=economy['date'].max(), periods=12, freq='M')  # Prédire sur 12 mois
         future_dates_ordinal = future_dates.map(lambda x: x.toordinal()).values.reshape(-1, 1)
-        predictions = model.predict(future_dates_ordinal)
+        predictions_normalized = model.predict(future_dates_ordinal)
+
+        # Inverser la normalisation pour obtenir les valeurs prédictives originales
+        predictions = scaler.inverse_transform(predictions_normalized)
 
         # Affichage des prévisions
         prediction_df = pd.DataFrame({
             'Date': future_dates,
-            'Prédiction du PIB': predictions
+            'Prédiction du PIB': predictions.flatten()
         })
 
         fig_forecast = px.line(
