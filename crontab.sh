@@ -2,17 +2,6 @@
 
 # Arrête le script en cas d'erreur
 set -e
- 
-
-
-# Active l'environnement virtuel
-if [ -d "myvenv" ]; then
-    source myvenv/bin/activate
-else
-    echo "Erreur : le répertoire 'myvenv' n'existe pas."
-    exit 1
-fi
-
 # Exécution des scripts Bash
 
 # Vérifie et exécute le script event_bash.sh
