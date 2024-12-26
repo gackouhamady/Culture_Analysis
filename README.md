@@ -495,24 +495,26 @@ Pour explorer la base de données, il faut télécharger MongoDB Compass et se c
 - 0 */3 * * * /path/vers/crontab.sh
 
 ## Conception du tableau  de bord : 
+### Outils utilisés  
+Pour ce projet, j'ai utilisé une combinaison d'outils modernes afin de concevoir un tableau de bord interactif, performant et robuste  :  
+
+- **Streamlit** : Framework principal pour créer une interface utilisateur intuitive et interactive, adaptée à l'analyse de données multi-sources en temps réel.  
+- **Pandas** : Manipulation, nettoyage et transformation des données pour garantir leur qualité avant analyse.  
+- **Plotly** : Génération de visualisations dynamiques et interactives, telles que des graphiques et des cartes géographiques.  
+- **Pymongo** : Connexion et extraction des données depuis MongoDB pour intégrer des informations actualisées dans le tableau de bord.  
+- **Sklearn** : Implémentation de modèles de machine learning pour la détection d'anomalies et la prédiction des tendances.  
 
 
-
-
-
-
-
-## Présentation  des résultats d'analyse 
-
-
-
-
+Ces outils m'ont permis de combiner analyse, visualisation et interactivité, répondant ainsi aux objectifs de ce projet ambitieux.  
 
 ## Conclusion : 
+ 
 
-
-
-
+Ce projet de tableau de bord en temps réel a permis d'intégrer et d'analyser des données provenant de diverses sources, telles que les événements culturels, les performances sportives et les indicateurs économiques. Grâce à des outils comme Streamlit, Pandas, Plotly, Pymongo et Sklearn, nous avons pu créer une interface interactive et intuitive, offrant des insights précieux sur l'impact des événements sur l'économie locale.
 
 
 ## Perspectives :
+
+Pour l'avenir, nous pourrions élargir les sources de données, améliorer les modèles prédictifs, personnaliser davantage l'interface utilisateur, intégrer des analyses géospatiales avancées, ajouter des fonctionnalités de collaboration et connecter le tableau de bord à d'autres systèmes d'information pour automatiser les flux de travail. Ces améliorations rendront l'outil encore plus utile pour les gestionnaires d'événements, les économistes et les autorités locales.
+
+
