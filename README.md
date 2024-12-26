@@ -1,3 +1,33 @@
+# Table des matières
+- [Table des matières](#table-des-matières)
+  - [Problématique](#problématique)
+  - [Importance du sujet](#importance-du-sujet)
+  - [Objectifs concrets](#objectifs-concrets)
+  - [API utilisées](#api-utilisées)
+    - [1. **Ticketmaster API**](#1-ticketmaster-api)
+    - [2. **Football Data API**](#2-football-data-api)
+    - [3. **World Bank API**](#3-world-bank-api)
+    - [4. **Points communs entre les sources de données**](#4-points-communs-entre-les-sources-de-données)
+    - [5. **Volumétrie à prévoir** :](#5-volumétrie-à-prévoir-)
+  - [Importation et Transformation des Données](#importation-et-transformation-des-données)
+    - [1. API Ticketmaster (Événements)](#1-api-ticketmaster-événements)
+    - [Code d'Importation](#code-dimportation)
+    - [Code de Transformation](#code-de-transformation)
+    - [2. API Football](#2-api-football)
+    - [Code d'importation](#code-dimportation-1)
+    - [Code de Transformation](#code-de-transformation-1)
+    - [3. API World Bank](#3-api-world-bank)
+    - [Code d'importation](#code-dimportation-2)
+    - [Code de Transformation](#code-de-transformation-2)
+  - [Fichier Chron :](#fichier-chron-)
+  - [Cron Job :  Automatisation du  fichier chron ci dessus](#cron-job---automatisation-du--fichier-chron-ci-dessus)
+  - [Exploration de la base de données MongoDB](#exploration-de-la-base-de-données-mongodb)
+  - [Cron Job](#cron-job)
+  - [Conception du tableau  de bord :](#conception-du-tableau--de-bord-)
+    - [Outils utilisés](#outils-utilisés)
+  - [Conclusion :](#conclusion-)
+  - [Perspectives :](#perspectives-)
+
 ## Problématique
 Comment pouvons-nous concevoir un tableau de bord temps réel intégrant des données sur les événements culturels, les performances sportives (football) et les indicateurs économiques, afin d'analyser l’interaction entre l’activité humaine, l’économie et le sport dans une zone géographique donnée ?
 
@@ -11,9 +41,9 @@ Ce projet vise à démontrer comment des données disparates, mais interdépenda
 4. **Démontrer la faisabilité technique** : Validation du concept avec des scripts d’automatisation et une analyse périodique résumée dans MongoDB, tout en garantissant la pertinence et l’actualité des données affichées.
 
 
-# API utilisées
+## API utilisées
 
-## 1. **Ticketmaster API**
+### 1. **Ticketmaster API**
    - **Nature** : Temps réel
    - **Contenu des données** : Cette API fournit des informations sur les événements (concerts, festivals, événements sportifs, etc.), telles que :
      - Nom de l'événement
@@ -32,7 +62,7 @@ Ce projet vise à démontrer comment des données disparates, mais interdépenda
      - **Volumétrie à prévoir sur une année d’utilisation**:
      La volumétrie dépendra du nombre d'événements suivis, mais en moyenne, cela pourrait représenter des centaines de milliers de requêtes sur une année, avec des pics lors de festivals ou événements majeurs.
 
-## 2. **Football Data API**
+### 2. **Football Data API**
    - **Nature** : Temps réel
    - **Contenu des données** : Cette API fournit des données sur les compétitions de football à travers le monde. Les informations incluent :
      - Détails sur les compétitions (nom de la compétition, pays, saison)
@@ -49,7 +79,7 @@ Ce projet vise à démontrer comment des données disparates, mais interdépenda
    - **Volumétrie à prévoir sur une année d’utilisation**:
      Selon le nombre de compétitions suivies et la fréquence des matchs, la volumétrie pourrait être de plusieurs millions de requêtes sur l'année, surtout en période de compétitions majeures (Coupes du Monde, Ligues, etc.).
 
-## 3. **World Bank API**
+### 3. **World Bank API**
    - **Nature** : Pas en temps réel (données économiques historiques)
    - **Contenu des données** : Cette API fournit des données économiques détaillées pour différents pays, notamment :
      - PIB par pays (en dollars constants ou courants)
@@ -67,20 +97,20 @@ Ce projet vise à démontrer comment des données disparates, mais interdépenda
      - **Restrictions** : Les données peuvent être utilisées librement dans des projets académiques, de recherche ou d'analyse. Pour un usage commercial, il est recommandé de vérifier les conditions spécifiques sur le site de la Banque Mondiale.
      - **Volumétrie à prévoir sur une année d’utilisation**:
      La volumétrie peut être modeste, en fonction du nombre d'indicateurs suivis, avec des centaines de milliers de points de données à traiter sur l'année.
-## 4. **Points communs entre les sources de données**
+### 4. **Points communs entre les sources de données**
    - **Accès via API**: Toutes les trois API offrent un accès via des appels RESTful.
    - **Données structurées en JSON** : Les données sont principalement disponibles en format JSON, ce qui facilite leur traitement et leur intégration dans des applications.
   - **Utilisation en temps réel ou périodique** : Les deux premières API (Ticketmaster et Football Data) offrent des données mises à jour en temps réel, tandis que la troisième (World Bank) propose des données historiques mises à jour annuellement.
   - **Nécessité d'une clé API pour deux**: Ticketmaster et Football Data nécessitent une clé API pour accéder aux données, tandis que la Banque Mondiale permet un accès libre sans clé API.
-## 5. **Volumétrie à prévoir** :
+### 5. **Volumétrie à prévoir** :
    - **Ticketmaster API** : La volumétrie dépend des événements suivis, mais elle peut atteindre des centaines de milliers de requêtes par an.
    - **Football Data API :** En raison de la mise à jour en temps réel, cette API peut générer plusieurs millions de requêtes annuellement, selon la fréquence des matchs.
    - **World Bank API**: Cette API génère moins de volumétrie, mais peut contenir des centaines de milliers de points de données par an, selon les indicateurs suivis.
 
 
-# Importation et Transformation des Données
+## Importation et Transformation des Données
 
-## 1. API Ticketmaster (Événements)
+### 1. API Ticketmaster (Événements)
 
 ### Code d'Importation
 
@@ -194,7 +224,7 @@ print("Données résumées et stockées dans MongoDB avec succès.")
 
 ``` 
 
-## 2. API Football
+### 2. API Football
 
 ### Code d'importation 
 ``` bash 
@@ -300,7 +330,7 @@ for filename in os.listdir(directory):
 print("Données résumées et stockées dans MongoDB avec succès.")
 
 ```
-## 3. API World Bank 
+### 3. API World Bank 
 
 ### Code d'importation 
 ``` bash 
