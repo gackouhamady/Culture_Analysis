@@ -1,9 +1,10 @@
-
 streamlit
 pandas
 plotly
 pymongo
 python-dateutil
-streamlit-option-menu 
-
-
+streamlit-option-menu
+scikit-learn
+statsmodels
+geopy
+numpy
