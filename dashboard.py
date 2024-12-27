@@ -38,7 +38,7 @@ def load_data():
     
     # Rename 'dates' column to 'date'
     event = event.rename(columns={"dates": "date"})
-    football = football.rename(columns={"dates": "date"})
+    football = football.rename(columns={"date": "date"})
     economy = economy.rename(columns={"dates": "date"})
     
     return event, football, economy
@@ -344,180 +344,319 @@ elif section == "Analyse avancée":
     # ---------------------------- Sélection de l'option d'analyse ----------------------------
     option = st.selectbox(
         "Choisissez l'analyse à afficher:",
-        options=["Économie vs Événements", "Économie vs Football", "Événements vs Football", "Football, Économie et Événements"]
+        options=["Prévision Économie et Événements", "Économie vs Football", "Événements vs Football", "Football, Économie et Événements"]
     )
 
+
+
+
     # ---------------------------- Économie vs Événements ----------------------------
-    if option == "Économie vs Événements":
-        st.markdown("### Impact des Événements Culturels sur l'Économie")
+    if option == "Prévision Économie et Événements":
+        st.markdown("### Prévision des tendances économiques futures et événements passés et à venir")
 
-        if 'events' in locals() and len(events) > 0:
-            events['dates'] = pd.to_datetime(event['dates'])  # Assurer que les dates des événements sont au format DateTime
+        # Filtrage des données économiques (ici PIB)
+        economy_pib = economy[economy["indicator"] == "GDP (current US$)"]
+        economy_pib = economy_pib[["date", "value"]].set_index("date")
+        economy_pib.index = pd.to_datetime(economy_pib.index)
+        economy_pib = economy_pib.resample('A').sum()  # Agrégation par année
 
-            # Fusionner les données des événements avec les données économiques sur la base des dates
-            econ_with_events = economy.merge(event[['dates', 'city']], left_on='date', right_on='dates', how='left')
+        # Modèle de prévision avec Holt-Winters
+        model = ExponentialSmoothing(economy_pib["value"], trend="add", seasonal=None, damped_trend=True)
+        model_fit = model.fit()
+        forecast = model_fit.forecast(steps=5)  # Prévision pour les 5 prochaines années
 
-            fig_event_impact = px.scatter(
-                econ_with_events, 
-                x="dates", 
-                y="value", 
-                color="city",
-                title="Impact des événements culturels sur les indicateurs économiques"
-            )
-            st.plotly_chart(fig_event_impact)
+        # Créer un graphique pour l'affichage des prévisions du PIB
+        fig_forecast = go.Figure()
+        fig_forecast.add_trace(go.Scatter(
+            x=economy_pib.index,
+            y=[value + (i * 0.05 * value) for i, value in enumerate(economy_pib["value"])],  # Écarter les points sur l'axe Y
+            mode='lines', name='Historique'
+        ))
+        fig_forecast.add_trace(go.Scatter(
+            x=forecast.index,
+            y=[value + (i * 0.05 * value) for i, value in enumerate(forecast.values)],  # Écarter les points sur l'axe Y
+            mode='lines', name='Prévision', line=dict(dash='dot')
+        ))
+
+        # Assurez-vous que la colonne 'date' est au format datetime
+        event['date'] = pd.to_datetime(event['date'], errors='coerce')
+
+        # Remplissez les dates manquantes avec une date future
+        future_date = pd.to_datetime('2100-01-01')
+        event['date'].fillna(future_date, inplace=True)
+
+        # Filtrer les événements passés (avant la date actuelle)
+        events_past = event[event['date'] < pd.to_datetime('today').normalize()]
+        if len(events_past) > 0:
+            fig_forecast.add_trace(go.Scatter(
+                x=events_past['date'],
+                y=[economy_pib['value'].mean() + (i * 0.05 * economy_pib['value'].mean()) for i in range(len(events_past))],  # Écarter les points sur l'axe Y
+                mode='markers', name="Événements passés",
+                marker=dict(color='blue', size=10, symbol='circle')
+            ))
+
+        # Filtrer les événements à venir (date actuelle ou ultérieure)
+        events_upcoming = event[event['date'] >= pd.to_datetime('today').normalize()]
+        if len(events_upcoming) > 0:
+            fig_forecast.add_trace(go.Scatter(
+                x=events_upcoming['date'],
+                y=[forecast.mean() + (i * 0.05 * forecast.mean()) for i in range(len(events_upcoming))],  # Écarter les points sur l'axe Y
+                mode='markers', name="Événements à venir",
+                marker=dict(color='red', size=10, symbol='x')
+            ))
+
+        # Mise à jour du graphique pour inclure les titres et les axes
+        fig_forecast.update_layout(
+            title="Prévision du PIB Futur et Événements",
+            xaxis_title="Année",
+            yaxis_title="Valeur du PIB",
+            showlegend=True
+        )
+
+        # Affichage du graphique dans Streamlit
+        st.plotly_chart(fig_forecast)
+
+
+
+
+
+
 
     # ---------------------------- Économie vs Football ----------------------------
     elif option == "Économie vs Football":
-        st.markdown("### Impact des Performances Sportives sur l'Économie")
+        
+            st.markdown("### Prévision des tendances économiques et analyse des interactions avec le sport")
 
-       # Assuming 'economy' and 'football' DataFrames are already defined
+            # Filtrage des données économiques (ici PIB)
+            economy_pib = economy[economy["indicator"] == "GDP (current US$)"]
+            economy_pib = economy_pib[["date", "value"]].set_index("date")
+            economy_pib.index = pd.to_datetime(economy_pib.index)
+            economy_pib = economy_pib.resample('A').sum()  # Agrégation par année
 
-        # Filtrage des données de football pour l'analyse des performances
-        if 'football' in locals() and len(football) > 0:
-            football['date'] = pd.to_datetime(football['date'])  # Assurer que les dates sont au format DateTime
+            # Modèle de prévision avec Holt-Winters
+            model = ExponentialSmoothing(economy_pib["value"], trend="add", seasonal=None, damped_trend=True)
+            model_fit = model.fit()
+            forecast = model_fit.forecast(steps=5)  # Prévision pour les 5 prochaines années
 
-            # Calculer l'impact des résultats des matchs sur le PIB (ici basé sur la performance de l'équipe)
-            football["economic_impact"] = football.apply(lambda x: 1 if x["performance_home_team"] == "winner" else -1, axis=1)
+            # Créer un graphique pour l'affichage des prévisions du PIB
+            fig_forecast = go.Figure()
+            fig_forecast.add_trace(go.Scatter(
+                x=economy_pib.index,
+                y=[value + (i * 0.05 * value) for i, value in enumerate(economy_pib["value"])],  # Écarter les points sur l'axe Y
+                mode='lines', name='Historique PIB'
+            ))
+            fig_forecast.add_trace(go.Scatter(
+                x=forecast.index,
+                y=[value + (i * 0.05 * value) for i, value in enumerate(forecast.values)],  # Écarter les points sur l'axe Y
+                mode='lines', name='Prévision PIB', line=dict(dash='dot')
+            ))
 
-            # Convertir la colonne 'date' dans le DataFrame 'economy' au format datetime
+
+            # Conversion des colonnes de date en format datetime
             economy['date'] = pd.to_datetime(economy['date'])
+            football['date'] = pd.to_datetime(football['date'], errors='coerce')  # Conversion des dates
+            football['date'] = football['date'].dt.tz_localize(None)
 
+            # Traitement des données de football
+            football['date'] = pd.to_datetime(football['date'], errors='coerce')
+            football_past = football[football['date'] < pd.to_datetime('today').normalize()]
+            football_upcoming = football[football['date'] >= pd.to_datetime('today').normalize()]
 
-            # Localiser les colonnes 'date' au fuseau horaire UTC
-            economy['date'] = economy['date'].dt.tz_localize('UTC', ambiguous='NaT', nonexistent='shift_forward')
- 
-            # Convertir les colonnes 'date' au même fuseau horaire
-            economy['date'] = economy['date'].dt.tz_convert('UTC')
-            football['date'] = football['date'].dt.tz_convert('UTC')
+            if len(football_past) > 0:
+                fig_forecast.add_trace(go.Scatter(
+                    x=football_past['date'],
+                    y=[economy_pib['value'].mean() + (i * 0.05 * economy_pib['value'].mean()) for i in range(len(football_past))],  # Écarter les points sur l'axe Y
+                    mode='markers', name="Matches passés",
+                    marker=dict(color='green', size=10, symbol='circle')
+                ))
 
-            # Agréger les données économiques en fonction des performances sportives (impact positif ou négatif)
-            econ_with_football = economy.merge(football[['date', 'economic_impact']], on='date', how='left')
+            if len(football_upcoming) > 0:
+                fig_forecast.add_trace(go.Scatter(
+                    x=football_upcoming['date'],
+                    y=[forecast.mean() + (i * 0.05 * forecast.mean()) for i in range(len(football_upcoming))],  # Écarter les points sur l'axe Y
+                    mode='markers', name="Matches à venir",
+                    marker=dict(color='orange', size=10, symbol='x')
+                ))
 
-            fig_impact = px.line(
-                econ_with_football, 
-                x="date", 
-                y="value", 
-                color="economic_impact", 
-                title="Impact des résultats sportifs sur les indicateurs économiques"
+            # Mise à jour du graphique pour inclure les titres et les axes
+            fig_forecast.update_layout(
+                title="Prévision du PIB, Matches de Football et Événements",
+                xaxis_title="Date",
+                yaxis_title="Valeur du PIB",
+                showlegend=True
             )
-            st.plotly_chart(fig_impact)
+
+            # Affichage du graphique dans Streamlit
+            st.plotly_chart(fig_forecast)
 
     # ---------------------------- Événements vs Football ----------------------------
     elif option == "Événements vs Football":
-        st.markdown("### Interaction entre les événements culturels et les performances sportives")
+        
+        football['date'] = pd.to_datetime(football['date'], errors='coerce').dt.tz_localize(None)
+        event['date'] = pd.to_datetime(event['date'], errors='coerce')
 
-        if 'football' in locals() and len(football) > 0 and 'events' in locals() and len(events) > 0:
-            # Fusionner les données des événements avec les données de football
-            events['dates'] = pd.to_datetime(events['dates'])
-            football['date'] = pd.to_datetime(football['date'])
+        # Filtrage des données par rapport à la date actuelle 
+        
+        
+        football_past = football[football['date'] < pd.to_datetime('today').normalize()]
+        football_upcoming = football[football['date'] >= pd.to_datetime('today').normalize()]
 
-            events_with_football = events.merge(football[['date', 'home_team', 'away_team']], left_on='dates', right_on='date', how='left')
+        event_past = event[event['date'] < pd.to_datetime('today').normalize()]
+        event_upcoming = event[event['date'] >= pd.to_datetime('today').normalize()]
 
-            fig_event_football_impact = px.scatter(
-                events_with_football,
-                x="dates",
-                y="home_team",  # Exemple d'affichage d'une équipe à domicile par rapport à la date de l'événement
-                color="away_team",
-                title="Interaction entre événements culturels et performances sportives"
-            )
-            st.plotly_chart(fig_event_football_impact)
+        # Création du graphique
+        fig = go.Figure()
+
+        # Ajout des événements passés de football
+        
+        
+        if len(football_past) > 0:
+            fig.add_trace(go.Scatter(
+                x=football_past['date'],
+                # Vérifier si 'economy_pib['value']' est une série ou un flottant
+
+                 
+                mode='markers',
+                name="Matches passés",
+                marker=dict(color='green', size=10, symbol='circle')
+            ))
+
+        # Ajout des événements futurs de football
+        if len(football_upcoming) > 0:
+            fig.add_trace(go.Scatter(
+                x=football_upcoming['date'],
+                y=[i for i in range(len(football_upcoming))],  # Positionner en fonction de l'indice
+                mode='markers',
+                name="Matches à venir",
+                marker=dict(color='orange', size=10, symbol='x')
+            ))
+
+        # Ajout des événements culturels passés
+        if len(event_past) > 0:
+            fig.add_trace(go.Scatter(
+                x=event_past['date'],
+                y=[i for i in range(len(event_past))],  # Positionner en fonction de l'indice
+                mode='markers',
+                name="Événements culturels passés",
+                marker=dict(color='blue', size=10, symbol='circle')
+            ))
+
+        # Ajout des événements culturels futurs
+        if len(event_upcoming) > 0:
+            fig.add_trace(go.Scatter(
+                x=event_upcoming['date'],
+                y=[i for i in range(len(event_upcoming))],  # Positionner en fonction de l'indice
+                mode='markers',
+                name="Événements culturels à venir",
+                marker=dict(color='red', size=10, symbol='x')
+            ))
+
+
+        # Mise en page du graphique
+        fig.update_layout(
+            title="Distribution des événements culturels et sportifs",
+            xaxis_title="Date",
+            yaxis_title="Valeur indicatrice (écartée pour différenciation)",
+            showlegend=True
+        )
+
+        # Affichage dans Streamlit
+        st.markdown("### Analyse des interactions des événements culturels et sportifs")
+        st.plotly_chart(fig)
+        
+   
+   
 
     # ---------------------------- Football, Économie et Événements ----------------------------
     elif option == "Football, Économie et Événements":
-        st.markdown("### Interaction combinée entre Événements, Football et Économie")
+            
+            st.markdown("### Prévision des tendances économiques et analyse des interactions avec les événements culturels et sportifs")
 
-        if 'football' in locals() and len(football) > 0 and 'events' in locals() and len(events) > 0 and not economy.empty:
-            # Fusionner les trois ensembles de données (football, événements, économie)
-            events['dates'] = pd.to_datetime(events['dates'])
-            football['date'] = pd.to_datetime(football['date'])
+            # Filtrage des données économiques (ici PIB)
+            economy_pib = economy[economy["indicator"] == "GDP (current US$)"]
+            economy_pib = economy_pib[["date", "value"]].set_index("date")
+            economy_pib.index = pd.to_datetime(economy_pib.index)
+            economy_pib = economy_pib.resample('A').sum()  # Agrégation par année
 
-            # Fusionner les événements et le football sur les dates
-            events_with_football = events.merge(football[['date', 'home_team', 'away_team']], left_on='dates', right_on='date', how='left')
+            # Modèle de prévision avec Holt-Winters
+            model = ExponentialSmoothing(economy_pib["value"], trend="add", seasonal=None, damped_trend=True)
+            model_fit = model.fit()
+            forecast = model_fit.forecast(steps=5)  # Prévision pour les 5 prochaines années
 
-            # Fusionner le résultat final avec les données économiques
-            final_data = events_with_football.merge(economy[['date', 'value']], left_on='dates', right_on='date', how='left')
+            # Créer un graphique pour l'affichage des prévisions du PIB
+            fig_forecast = go.Figure()
+            fig_forecast.add_trace(go.Scatter(
+                x=economy_pib.index,
+                y=[value + (i * 0.05 * value) for i, value in enumerate(economy_pib["value"])],  # Écarter les points sur l'axe Y
+                mode='lines', name='Historique PIB'
+            ))
+            fig_forecast.add_trace(go.Scatter(
+                x=forecast.index,
+                y=[value + (i * 0.05 * value) for i, value in enumerate(forecast.values)],  # Écarter les points sur l'axe Y
+                mode='lines', name='Prévision PIB', line=dict(dash='dot')
+            ))
 
-            fig_combined_impact = px.line(
-                final_data,
-                x="dates",
-                y="value",  # Indicateur économique
-                color="home_team",  # Par exemple, en fonction de l'équipe à domicile
-                line_dash="away_team",  # Utiliser l'équipe à l'extérieur comme ligne de séparation
-                title="Interaction combinée entre Événements, Football et Indicateurs Économiques"
+
+            # Conversion des colonnes de date en format datetime
+            economy['date'] = pd.to_datetime(economy['date'])
+            football['date'] = pd.to_datetime(football['date'], errors='coerce')  # Conversion des dates
+            football['date'] = football['date'].dt.tz_localize(None)
+
+            # Traitement des données de football
+            football['date'] = pd.to_datetime(football['date'], errors='coerce')
+            football_past = football[football['date'] < pd.to_datetime('today').normalize()]
+            football_upcoming = football[football['date'] >= pd.to_datetime('today').normalize()]
+
+            if len(football_past) > 0:
+                fig_forecast.add_trace(go.Scatter(
+                    x=football_past['date'],
+                    y=[economy_pib['value'].mean() + (i * 0.05 * economy_pib['value'].mean()) for i in range(len(football_past))],  # Écarter les points sur l'axe Y
+                    mode='markers', name="Matches passés",
+                    marker=dict(color='green', size=10, symbol='circle')
+                ))
+
+            if len(football_upcoming) > 0:
+                fig_forecast.add_trace(go.Scatter(
+                    x=football_upcoming['date'],
+                    y=[forecast.mean() + (i * 0.05 * forecast.mean()) for i in range(len(football_upcoming))],  # Écarter les points sur l'axe Y
+                    mode='markers', name="Matches à venir",
+                    marker=dict(color='orange', size=10, symbol='x')
+                ))
+
+            # Traitement des données d'événements culturels
+            event['date'] = pd.to_datetime(event['date'], errors='coerce')
+            event_past = event[event['date'] < pd.to_datetime('today').normalize()]
+            event_upcoming = event[event['date'] >= pd.to_datetime('today').normalize()]
+
+            if len(event_past) > 0:
+                fig_forecast.add_trace(go.Scatter(
+                    x=event_past['date'],
+                    y=[economy_pib['value'].mean() + (i * 0.1 * economy_pib['value'].mean()) for i in range(len(event_past))],  # Écarter les points sur l'axe Y
+                    mode='markers', name="Événements passés",
+                    marker=dict(color='blue', size=10, symbol='circle')
+                ))
+
+            if len(event_upcoming) > 0:
+                fig_forecast.add_trace(go.Scatter(
+                    x=event_upcoming['date'],
+                    y=[forecast.mean() + (i * 0.1 * forecast.mean()) for i in range(len(event_upcoming))],  # Écarter les points sur l'axe Y
+                    mode='markers', name="Événements à venir",
+                    marker=dict(color='red', size=10, symbol='x')
+                ))
+
+            # Mise à jour du graphique pour inclure les titres et les axes
+            fig_forecast.update_layout(
+                title="Prévision du PIB, Matches de Football et Événements",
+                xaxis_title="Date",
+                yaxis_title="Valeur du PIB",
+                showlegend=True
             )
-            st.plotly_chart(fig_combined_impact)
 
-    # ---------------------------- Prévisions économiques basées sur les événements à venir ----------------------------
+            # Affichage du graphique dans Streamlit
+            st.plotly_chart(fig_forecast)
 
-    st.markdown("### Prévisions économiques basées sur les événements futurs")
-    if not economy.empty:
-        # Filtrer les données économiques
-        
-        economy = economy.dropna(subset=['value'])  # Supprimer les lignes avec des valeurs manquantes
-        economy = economy[np.isfinite(economy['value'])]  # Garder seulement les valeurs finies
-
-        economy['date'] = pd.to_datetime(economy['date'])
-        economy['date_ordinal'] = economy['date'].apply(lambda x: x.toordinal())  # Convertir les dates en valeurs ordinales
-
-        # Préparer les données pour la régression
-        X = economy[['date_ordinal']]  # Données indépendantes (dates)
-        y = economy['value']  # Valeurs à prédire
-
-                # Vérifier et nettoyer les données
-        if economy['value'].isnull().any() or not np.isfinite(economy['value']).all():
-            raise ValueError("Les données contiennent des valeurs manquantes ou infinies.")
-        
-
-        # Normaliser les valeurs du PIB
-        scaler = StandardScaler()
-        y_normalized = scaler.fit_transform(y.values.reshape(-1, 1))
-
-        # Entraîner le modèle de régression linéaire
-        model = LinearRegression()
-        model.fit(X, y_normalized)
-
-        # Prédire les valeurs futures (par exemple, pour les 3 prochaines années)
-        future_dates = pd.date_range(start=economy['date'].max(), periods=12, freq='M')  # Prédire sur 12 mois
-        future_dates_ordinal = future_dates.map(lambda x: x.toordinal()).values.reshape(-1, 1)
-        predictions_normalized = model.predict(future_dates_ordinal)
-
-        # Inverser la normalisation pour obtenir les valeurs prédictives originales
-        predictions = scaler.inverse_transform(predictions_normalized)
-
-        # Affichage des prévisions
-        prediction_df = pd.DataFrame({
-            'Date': future_dates,
-            'Prédiction du PIB': predictions.flatten()
-        })
-
-        fig_forecast = px.line(
-            prediction_df, 
-            x='Date', 
-            y='Prédiction du PIB', 
-            title="Prévisions économiques basées sur les événements à venir"
-        )
-        st.plotly_chart(fig_forecast)
 
     # ---------------------------- Synthèse et Interaction des Données ----------------------------
-
-    st.markdown("### Synthèse des Interactions entre Événements, Sport et Économie")
-
-    st.write("Analyse complète de l'interaction entre l'économie, les événements culturels et sportifs.")
-    st.write("Cette analyse permet de visualiser l'impact cumulé de ces trois domaines sur les indicateurs économiques.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 from datetime import datetime
