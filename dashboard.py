@@ -13,6 +13,11 @@ import plotly.graph_objects as go
 import geopy
 from geopy.geocoders import Nominatim
 import numpy as np
+
+
+
+
+
  
 
 
@@ -50,17 +55,37 @@ event, football, economy = load_data()
 with st.sidebar:
     section = option_menu(
         menu_title="Tableau de bord",  # Titre du menu
-        options=["Rapport", "Accueil", "Événements culturels", "Données sportives", "Indicateurs économiques", "Analyse avancée"],  # Section
+        options=["Rapport", "Accueil", "Événements culturels", "Données sportives", "Indicateurs économiques", "Analyse avancée"],  # Sections
         icons=["file", "house", "headphones", "trophy", "bar-chart", "graph-up"],  # Icônes correspondantes
         menu_icon="list",  # Icône pour le menu global
         default_index=0,  # Section par défaut
         styles={
-            "container": {"padding": "5px", "background-color": "#2E2E2E", "height": "100vh", "display": "flex", "flex-direction": "column", "justify-content": "center"},
-            "icon": {"color": "blue", "font-size": "18px"},  # Couleur et taille des icônes
-            "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "--hover-color": "#eee"},
-            "nav-link-selected": {"background-color": "#02ab21"},  # Couleur de sélection
-        },
+            "container": {
+                "padding": "5px", 
+                "background-color": "#2E2E2E", 
+                "height": "100%",  # Assure que la hauteur prend toute la fenêtre
+                "display": "flex", 
+                "flex-direction": "column", 
+                "justify-content": "flex-start",  # Aligne les éléments au sommet de la sidebar
+                "overflow": "auto"  # Permet de défiler si nécessaire
+            },
+            "icon": {
+                "color": "blue", 
+                "font-size": "18px"
+            },
+            "nav-link": {
+                "font-size": "16px", 
+                "text-align": "left", 
+                "margin": "10px 10px", 
+                "--hover-color": "#eee"
+            },
+            "nav-link-selected": {
+                "background-color": "#02ab21"
+            },
+        }
     )
+
+
 
 
 # Homepage
@@ -656,10 +681,8 @@ elif section == "Analyse avancée":
             st.plotly_chart(fig_forecast)
 
 
-    # ---------------------------- Synthèse et Interaction des Données ----------------------------
+    # ---------------------------- Footer du  tableau  de bord ----------------------------
 
-
-from datetime import datetime
 
 current_year = datetime.now().year
 
@@ -700,10 +723,10 @@ footer .copyright {{
 <footer>
     <p>
         <a href="https://www.linkedin.com/in/hamady-gackou-687216251" target="_blank">
-            <i class="fa fa-linkedin"></i>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/01/LinkedIn_Logo.svg" width="30" height="30">
         </a>
         <a href="https://github.com/gackouhamady" target="_blank">
-            <i class="fa fa-github"></i>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" width="30" height="30">
         </a>
     </p>
     <p class="copyright">&copy; {current_year} Hamady Gackou</p>

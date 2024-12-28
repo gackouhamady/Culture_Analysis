@@ -10,6 +10,10 @@
     - [3. **World Bank API**](#3-world-bank-api)
     - [4. **Points communs entre les sources de données**](#4-points-communs-entre-les-sources-de-données)
     - [5. **Volumétrie à prévoir** :](#5-volumétrie-à-prévoir-)
+    - [6. Limite des API](#6-limite-des-api)
+      - [**TicketMaster API :**](#ticketmaster-api-)
+      - [**Football API (API-FOOTBALL) :**](#football-api-api-football-)
+      - [**World Bank API :**](#world-bank-api-)
   - [Importation et Transformation des Données](#importation-et-transformation-des-données)
     - [1. API Ticketmaster (Événements)](#1-api-ticketmaster-événements)
     - [Code d'Importation](#code-dimportation)
@@ -26,6 +30,8 @@
   - [Cron Job](#cron-job)
   - [Conception du tableau  de bord :](#conception-du-tableau--de-bord-)
     - [Outils utilisés](#outils-utilisés)
+  - [Difficultés de Déploiement des Tâches Planifiées sur les Plateformes de Déploiement :](#difficultés-de-déploiement-des-tâches-planifiées-sur-les-plateformes-de-déploiement-)
+  - [Lien du  repo Github  :](#lien-du--repo-github--)
   - [Conclusion :](#conclusion-)
   - [Perspectives :](#perspectives-)
 
@@ -107,6 +113,19 @@ Ce projet vise à démontrer comment des données disparates, mais interdépenda
    - **Ticketmaster API** : La volumétrie dépend des événements suivis, mais elle peut atteindre des centaines de milliers de requêtes par an.
    - **Football Data API :** En raison de la mise à jour en temps réel, cette API peut générer plusieurs millions de requêtes annuellement, selon la fréquence des matchs.
    - **World Bank API**: Cette API génère moins de volumétrie, mais peut contenir des centaines de milliers de points de données par an, selon les indicateurs suivis.
+### 6. Limite des API
+#### **TicketMaster API :**
+ - Par seconde : 5 requêtes par seconde.
+ - Par jour : 5000 requêtes par jour.
+#### **Football API (API-FOOTBALL) :** 
+Les limites dépendent du plan d'abonnement :
+ - Plan Gratuit : 10 requêtes par minute.
+ - Plan Pro : 300 requêtes par minute.
+ - Plan Ultra : 450 requêtes par minute.
+ - Plan Mega : 900 requêtes par minute.
+ - Plan Personnalisé : Jusqu'à 1200 requêtes par minute3.
+#### **World Bank API :**
+Les informations spécifiques sur les limites de l'API de la Banque Mondiale ne sont pas clairement définies, mais l' API est conçue pour supporter un grand nombre de requêtes.  
 
 
 ## Importation et Transformation des Données
@@ -423,16 +442,6 @@ print("Données économiques traitées et stockées dans MongoDB avec succès.")
 # Arrête le script en cas d'erreur
 set -e
  
-
-
-# Active l'environnement virtuel
-if [ -d "myvenv" ]; then
-    source myvenv/bin/activate
-else
-    echo "Erreur : le répertoire 'myvenv' n'existe pas."
-    exit 1
-fi
-
 # Exécution des scripts Bash
 
 # Vérifie et exécute le script event_bash.sh
@@ -503,9 +512,9 @@ now=$(date +"%Y-%m-%d %H:%M:%S")
 email_subject="Email du $now"
 
 # Définir le corps de l'e-mail
-email_body="Salut,\n\nCeci est votre tâche planifiée qui fonctionne sur Heroku.\n\nCordialement."
+email_body="Salut,\n\nCeci est votre tâche planifiée qui fonctionne .\n\nCordialement."
 
-# Envoyer l'e-mail
+# M'envoyer un email à  chaque execution de la tache cron 
 echo -e "Subject: $email_subject\n\n$email_body" | msmtp --from="Hamady GACKOU" -a default hamadygackou777@gmail.com
 
 ```
@@ -524,6 +533,8 @@ Pour explorer la base de données, il faut télécharger MongoDB Compass et se c
 ## Cron Job
 
 - 0 */3 * * * /path/vers/crontab.sh
+  
+
 
 ## Conception du tableau  de bord : 
 ### Outils utilisés  
@@ -536,11 +547,17 @@ Pour ce projet, j'ai utilisé une combinaison d'outils modernes afin de concevoi
 - **Sklearn** : Implémentation de modèles de machine learning pour la détection d'anomalies et la prédiction des tendances.  
 
 
-Ces outils m'ont permis de combiner analyse, visualisation et interactivité, répondant ainsi aux objectifs de ce projet ambitieux.  
+Ces outils m'ont permis de combiner analyse, visualisation et interactivité, répondant ainsi aux objectifs de ce projet ambitieux.
+
+
+## Difficultés de Déploiement des Tâches Planifiées sur les Plateformes de Déploiement :
+J'attire l'attention sur le fait que l'exécution de tâches planifiées via des scripts bash a été compromise par les limitations de Streamlit Cloud, qui ne prend pas en charge les tâches cron. Je souligne également que, bien que Heroku ait été envisagé comme solution, son recours à des dynos payants dépassait les contraintes de mon budget. Les tâches cron ne sont donc pas fonctionnelles sur le serveur utilisé pour mon déploiement, Streamlit Cloud.
+
+## Lien du  repo Github  : 
+https://github.com/gackouhamady/Culture_Analysis
+- NB : Pour un test en local, pour tout problème lié aux bibliothèques, vous pouvez installer un environnement virtuel Python et faire fonctionner les scripts  .
 
 ## Conclusion : 
- 
-
 Ce projet de tableau de bord en temps réel a permis d'intégrer et d'analyser des données provenant de diverses sources, telles que les événements culturels, les performances sportives et les indicateurs économiques. Grâce à des outils comme Streamlit, Pandas, Plotly, Pymongo et Sklearn, nous avons pu créer une interface interactive et intuitive, offrant des insights précieux sur l'impact des événements sur l'économie locale.
 
 
