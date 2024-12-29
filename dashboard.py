@@ -10,6 +10,7 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 import plotly.graph_objects as go
 import seaborn as sns
 import matplotlib.pyplot as plt
+import math
 
  
  
@@ -137,7 +138,7 @@ if section == "Rapport":
             </tr>
             <tr>
                 <th>Établissement</th>
-                <td>Université Paris Cité, UFR : Sciences fondamentales et biomédicales</td>
+                <td>Université Paris Cité, UFR : Sciences fondamentales et biomédicales, M1 : AMSD</td>
             </tr>
         </table>
     """, unsafe_allow_html=True)
@@ -409,6 +410,111 @@ elif section == "Indicateurs économiques":
                     labels={"value": "Écart-type du PIB (US$)", "country": "Pays"})
 
     st.plotly_chart(fig_std)
+
+ 
+
+    
+
+    # -----------------------------------------------------------------------------
+    
+
+    # Convertir les données brutes en DataFrame
+    gdp_df = pd.DataFrame(economy)
+
+    # Convertir la colonne "date" en année, en extrayant seulement l'année si c'est un timestamp
+    gdp_df['Year'] = pd.to_datetime(gdp_df['date'], errors='coerce').dt.year
+
+    # Vérifier si des années extrêmes existent et les remplacer
+    gdp_df['Year'] = gdp_df['Year'].apply(lambda x: min(2100, max(1900, x)) if pd.notnull(x) else x)
+
+    # Nous ne nous intéressons qu'aux colonnes nécessaires
+    gdp_df = gdp_df[['country_id', 'country', 'Year', 'value']]
+
+    # Renommer les colonnes pour plus de clarté
+    gdp_df.rename(columns={'country_id': 'Country Code', 'country': 'Country Name', 'value': 'GDP'}, inplace=True)
+
+    # Définir les années minimum et maximum pour le slider
+    min_value = gdp_df['Year'].min()
+    max_value = gdp_df['Year'].max()
+
+    # Sélectionner les années via un slider
+    from_year, to_year = st.slider(
+        'Quelles années vous intéressent ?',
+        min_value=min_value,
+        max_value=max_value,
+        value=[min_value, max_value]
+    )
+
+    # Récupérer la liste des pays uniques
+    countries = gdp_df['Country Code'].unique()
+
+    if not len(countries):
+        st.warning("Sélectionnez au moins un pays")
+
+    # Vérifier que les pays par défaut sont bien dans la liste des pays disponibles
+    default_countries = ['DEU', 'FRA', 'GBR', 'BRA', 'MEX', 'JPN']
+    valid_default_countries = [country for country in default_countries if country in countries]
+
+    # Sélectionner les pays via un menu déroulant avec des valeurs par défaut valides
+    selected_countries = st.multiselect(
+        'Quels pays souhaitez-vous afficher ?',
+        countries,
+        valid_default_countries  # Utilisation des pays par défaut valides
+    )
+
+    # Filtrer les données en fonction des pays et des années sélectionnées
+    filtered_gdp_df = gdp_df[
+        (gdp_df['Country Code'].isin(selected_countries))
+        & (gdp_df['Year'] <= to_year)
+        & (from_year <= gdp_df['Year'])
+    ]
+
+    # Afficher le graphique du PIB au fil du temps
+    st.header('PIB au fil du temps', divider='gray')
+
+    st.line_chart(
+        filtered_gdp_df,
+        x='Year',
+        y='GDP',
+        color='Country Code',
+    )
+
+    # Récupérer les données pour la première et la dernière année
+    first_year = gdp_df[gdp_df['Year'] == from_year]
+    last_year = gdp_df[gdp_df['Year'] == to_year]
+
+    st.header(f'PIB en {to_year}', divider='gray')
+
+    # Créer des colonnes pour afficher les résultats de manière espacée
+    cols = st.columns(4)
+
+    for i, country in enumerate(selected_countries):
+        col = cols[i % len(cols)]  # Répartir les pays dans les colonnes
+
+        with col:
+            # Récupérer les valeurs du PIB pour la première et la dernière année sélectionnées
+            first_gdp = first_year[first_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
+            last_gdp = last_year[last_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
+
+            # Vérifier si les valeurs du PIB sont valides
+            if math.isnan(first_gdp):
+                growth = 'n/a'
+                delta_color = 'off'
+            else:
+                # Calculer la croissance du PIB entre les années sélectionnées
+                growth = f'{last_gdp / first_gdp:,.2f}x'
+                delta_color = 'normal'
+
+            # Afficher le PIB du pays et la croissance
+            st.metric(
+                label=f'{country} PIB',
+                value=f'{last_gdp:,.0f}B',
+                delta=growth,
+                delta_color=delta_color
+            )
+
+
+
     
     
 # Analyse Avancée 
