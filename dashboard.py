@@ -238,23 +238,85 @@ if section == "Événements culturels":
         fig_event_venue = px.histogram(event, x="venue", title="Nombre d'événements par lieu")
         st.plotly_chart(fig_event_venue)
 
+
+ #-----------------------------------------------------------------------#------------------------------------------------------
+        # Conversion en DataFrame
+        events_df = pd.DataFrame(event)
+
+        # Conversion de la colonne 'dates' en format datetime et extraction de l'année
+        events_df['Year'] = pd.to_datetime(events_df['date'], errors='coerce').dt.year
+
+        # Remplacement des années futures par 2026
+        events_df['Year'] = events_df['Year'].apply(lambda x: min(x, 2026) if pd.notnull(x) else x)
+
+        # Sélectionner les colonnes pertinentes
+        events_df = events_df[['country', 'Year', 'name', 'city', 'classificationName']]
+
+        # Renommer les colonnes pour une meilleure clarté
+        events_df.rename(columns={
+            'country': 'Country',
+            'name': 'Event Name',
+            'city': 'City',
+            'classificationName': 'Category'
+        }, inplace=True)
+
+        # Définir les années minimum et maximum pour le slider
+        min_year = events_df['Year'].min()
+        max_year = events_df['Year'].max()
+
+        # Sélectionner les années via un slider
+        from_year, to_year = st.slider(
+            'Sélectionnez la plage d\'années',
+            min_value=min_year,
+            max_value=max_year,
+            value=[min_year, max_year]
+        )
+
+        # Récupérer la liste des pays uniques
+        countries = events_df['Country'].unique()
+
+        if not len(countries):
+            st.warning("Aucun pays disponible")
+
+        # Sélectionner les pays via un menu déroulant
+        selected_countries = st.multiselect(
+            'Sélectionnez les pays pour afficher les événements',
+            countries,
+            default=countries[:3]  # Choisir les trois premiers pays comme sélection par défaut
+        )
+
+        # Filtrer les données en fonction des années et des pays sélectionnés
+        filtered_events_df = events_df[
+            (events_df['Country'].isin(selected_countries)) &
+            (events_df['Year'] >= from_year) &
+            (events_df['Year'] <= to_year)
+        ]
+
+        # Afficher le graphique des événements par année
+        st.header('Nombre d\'événements par année et par pays', divider='gray')
+
+        # Créer un DataFrame pour compter les événements par pays et par année
+        events_count = filtered_events_df.groupby(['Year', 'Country']).size().reset_index(name='Event Count')
+
+        # Afficher un graphique de type bar chart
+        # Ajouter un titre au graphique
+        st.subheader("Distribution des événements par année")
+
+        # Afficher le bar chart sans l'argument 'title'
+        st.bar_chart(
+            data=events_count,
+            x='Year',
+            y='Event Count',
+            color='Country'  # Note: l'argument 'color' peut également ne pas être pris en charge
+        )
+
+
 # Sports Data Section
 elif section == "Données sportives":
     st.title("🏆 Données sportives")
     st.write("Analyse des performances sportives.")
     # Ajouter les graphiques et visualisations pour les données sportives ici.
-
-    st.markdown("### Performances des équipes")
-    if not football.empty:
-        football["date"] = pd.to_datetime(football["date"])
-        
-        # Tendance des performances sportives
-        fig_scores = px.line(
-            football, x="date", y="status", color="competition",
-            title="Tendance des performances sportives"
-        )
-        st.plotly_chart(fig_scores)
-        
+     
 
     st.markdown("### Comparaison des compétitions")
     fig_competitions = px.bar(
@@ -291,17 +353,73 @@ elif section == "Données sportives":
     )
     st.plotly_chart(fig_time_performance)
 
-   
+    #-----------------------------------------------------------------------------------------------------------#
+    # Conversion en DataFrame
+    football_df = pd.DataFrame(football)
 
-    st.markdown("### Analyse des Joueurs")
-    # Statistiques des Joueurs Clés
-    player_stats = football.groupby("home_team")[["score_home_team", "score_away_team"]].sum().reset_index()
-    fig_player_stats = px.bar(
-        player_stats, x="home_team", y=["score_home_team", "score_away_team"],
-        title="Statistiques des Joueurs Clés",
-        labels={"value": "Nombre de Buts", "home_team": "Équipe"}
+    # Conversion de la colonne 'date' en format datetime et extraction de l'année
+    football_df['Year'] = pd.to_datetime(football_df['date'], errors='coerce').dt.year
+
+    # Sélectionner les colonnes pertinentes
+    football_df = football_df[[
+        'Year', 'competition', 'home_team', 'away_team', 'score_home_team', 'score_away_team', 'performance_home_team', 'performance_away_team'
+    ]]
+
+    # Renommer les colonnes pour une meilleure clarté
+    football_df.rename(columns={
+        'competition': 'Competition',
+        'home_team': 'Home Team',
+        'away_team': 'Away Team',
+        'score_home_team': 'Home Score',
+        'score_away_team': 'Away Score',
+        'performance_home_team': 'Home Performance',
+        'performance_away_team': 'Away Performance'
+    }, inplace=True)
+
+    # Définir les années minimum et maximum pour le slider
+    min_year = football_df['Year'].min()
+    max_year = football_df['Year'].max()
+
+    # Sélectionner les années via un slider
+    from_year, to_year = st.slider(
+        'Sélectionnez la plage d\'années',
+        min_value=min_year,
+        max_value=max_year,
+        value=[min_year, max_year]
     )
-    st.plotly_chart(fig_player_stats)
+
+    # Récupérer la liste des compétitions uniques
+    competitions = football_df['Competition'].unique()
+
+    # Sélectionner les compétitions via un menu déroulant
+    selected_competitions = st.multiselect(
+        'Sélectionnez les compétitions pour afficher les matchs',
+        competitions,
+        default=competitions[:2]  # Par défaut, sélectionner les deux premières compétitions
+    )
+
+    # Filtrer les données en fonction des années et des compétitions sélectionnées
+    filtered_football_df = football_df[
+        (football_df['Competition'].isin(selected_competitions)) &
+        (football_df['Year'] >= from_year) &
+        (football_df['Year'] <= to_year)
+    ]
+
+    # Afficher le tableau des matchs filtrés
+    st.header('Matchs de football filtrés', divider='gray')
+    st.dataframe(filtered_football_df)
+
+    # Calculer le nombre de victoires par équipe pour les compétitions sélectionnées
+    team_performance = filtered_football_df.groupby('Home Team')['Home Performance'].value_counts().unstack(fill_value=0)
+
+    # Afficher un graphique des performances des équipes
+    st.header('Performances des équipes à domicile', divider='gray')
+
+    # Transformer les performances en pourcentages
+    team_performance_percentage = team_performance.div(team_performance.sum(axis=1), axis=0) * 100
+
+    # Afficher les données en graphique à barres empilées
+    st.bar_chart(team_performance_percentage, use_container_width=True)
 
 # Economic Indicators Section
 elif section == "Indicateurs économiques":
