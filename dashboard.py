@@ -3,16 +3,16 @@ import pandas as pd
 import plotly.express as px
 import pymongo
 from datetime import datetime
-from dateutil import parser
 from streamlit_option_menu import option_menu
-from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 import plotly.graph_objects as go
-import geopy
-from geopy.geocoders import Nominatim
-import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+ 
+ 
 
 
 
@@ -51,11 +51,28 @@ def load_data():
 event, football, economy = load_data()
 
 
+# Fonction pour vérifier et ajouter des valeurs manquantes dans 'priceRanges'
+def handle_missing_price_ranges(row):
+    # Vérifier si 'priceRanges' existe, sinon l'ajouter avec des valeurs nulles (0)
+    if 'priceRanges' not in row or not isinstance(row['priceRanges'], dict):
+        row['priceRanges'] = {'min': 0, 'max': 0}
+    else:
+        # Si 'priceRanges' existe, vérifier et ajouter 'min' et 'max' s'ils sont manquants
+        if 'min' not in row['priceRanges']:
+            row['priceRanges']['min'] = 0
+        if 'max' not in row['priceRanges']:
+            row['priceRanges']['max'] = 0
+    return row
+
+# Appliquer la fonction pour chaque ligne de l'instance 'event'
+event = event.apply(handle_missing_price_ranges, axis=1)
+
+
 # Personnalisation du sidebar
 with st.sidebar:
     section = option_menu(
         menu_title="Tableau de bord",  # Titre du menu
-        options=["Rapport", "Accueil", "Événements culturels", "Données sportives", "Indicateurs économiques", "Analyse avancée"],  # Sections
+        options=["Rapport", "Accueil", "Événements culturels", "Données sportives", "Indicateurs économiques", "Analyse avancée", "Vidéo de Présentation"],  # Sections
         icons=["file", "house", "headphones", "trophy", "bar-chart", "graph-up"],  # Icônes correspondantes
         menu_icon="list",  # Icône pour le menu global
         default_index=0,  # Section par défaut
@@ -409,7 +426,7 @@ elif section == "Analyse avancée":
         event['date'] = pd.to_datetime(event['date'], errors='coerce')
 
         # Remplissez les dates manquantes avec une date future
-        future_date = pd.to_datetime('2100-01-01')
+        future_date = pd.to_datetime('2026-01-01')
         event['date'].fillna(future_date, inplace=True)
 
         # Filtrer les événements passés (avant la date actuelle)
@@ -442,6 +459,59 @@ elif section == "Analyse avancée":
 
         # Affichage du graphique dans Streamlit
         st.plotly_chart(fig_forecast)
+
+    # --- Partie 2: Visualisation avec Seaborn pour analyser la relation entre événements et PIB ---
+
+        # Visualisation 1: Impact des événements passés et futurs sur le PIB
+        plt.figure(figsize=(10, 6))
+
+        # Fusionner les événements avec les données économiques pour la comparaison temporelle
+        events_past['impact'] = economy_pib['value'].mean()
+        events_upcoming['impact'] = forecast.mean()
+
+        # Tracer les événements passés et futurs par rapport au PIB
+        sns.lineplot(x=economy_pib.index, y=economy_pib['value'], label='PIB historique', color='blue')
+        sns.scatterplot(x=events_past['date'], y=events_past['impact'], color='blue', label='Événements passés')
+        sns.scatterplot(x=events_upcoming['date'], y=events_upcoming['impact'], color='red', label='Événements à venir')
+
+        plt.title("Impact des Événements sur l'Économie (PIB)")
+        plt.xlabel("Année")
+        plt.ylabel("Valeur du PIB (US$)")
+        plt.legend()
+        plt.xticks(rotation=45)
+        st.pyplot(plt) 
+    # 1. Fusionner les événements et les données économiques (PIB) pour pouvoir les comparer
+        event['year'] = pd.to_datetime(event['date']).dt.year  # Extraire l'année de la date des événements
+        economy_pib['year'] = economy_pib.index.year  # Extraire l'année du PIB
+
+        # Fusionner les données
+        merged_data = pd.merge(event, economy_pib[['value', 'year']], how='left', left_on='year', right_on='year')
+
+        # 2. Calculer 'price_mean' (vous l'avez déjà fait)
+        merged_data['price_mean'] = merged_data['priceRanges'].apply(
+            lambda x: (x['min'] + x['max']) / 2 if isinstance(x, dict) else 0
+        )
+        merged_data['price_mean'] = merged_data['price_mean'].fillna(0)
+
+        # 3. Diviser les événements en haute et basse croissance économique en fonction du PIB
+        high_growth = merged_data[merged_data['value'] > merged_data['value'].median()]
+        low_growth = merged_data[merged_data['value'] <= merged_data['value'].median()]
+
+        # 4. Créer des visualisations
+        plt.figure(figsize=(10, 6))
+
+        # Boxplot de la relation entre 'price_mean' et 'value' (PIB)
+        sns.boxplot(x='price_mean', y='value', data=merged_data, palette="coolwarm")
+
+        # Violinplot de la relation entre 'value' (PIB) et 'price_mean'
+        sns.violinplot(x='value', y='price_mean', data=merged_data, split=True)
+
+        plt.title("Relation entre les prix des événements et la performance économique (PIB)")
+        plt.xlabel("Prix des événements")
+        plt.ylabel("PIB (US$)")
+        plt.show()
+
+
 
 
 
@@ -515,6 +585,58 @@ elif section == "Analyse avancée":
 
             # Affichage du graphique dans Streamlit
             st.plotly_chart(fig_forecast)
+
+
+            # --- Partie 1: Visualisation de l'impact des matchs de football sur le PIB ---
+
+            # Fusionner les matchs de football avec les données économiques (PIB) pour la comparaison temporelle
+            plt.figure(figsize=(10, 6))
+
+            # Extraction de l'année des matchs de football
+            football['year'] = pd.to_datetime(football['date']).dt.year  # Extraire l'année du match de football
+            economy_pib['year'] = economy_pib.index.year  # Extraire l'année du PIB
+
+            # Fusionner les données football et économie
+            merged_football_pib = pd.merge(football, economy_pib[['value', 'year']], how='left', left_on='year', right_on='year')
+
+            # Calcul de la performance (par exemple, différence de score entre les équipes)
+            merged_football_pib['score_diff'] = merged_football_pib['score_home_team'] - merged_football_pib['score_away_team']
+
+            # Calculer la performance des équipes (pour la visualisation)
+            merged_football_pib['performance'] = merged_football_pib.apply(
+                lambda row: 'Home win' if row['performance_home_team'] == 'winner' else 'Away win' if row['performance_away_team'] == 'winner' else 'Draw', axis=1
+            )
+
+            # Tracer les matchs passés et futurs par rapport au PIB (optionnel, si vous avez des prédictions pour les matchs futurs)
+            sns.lineplot(x=economy_pib.index, y=economy_pib['value'], label='PIB historique', color='blue')
+
+            # Tracer les matchs de football avec la différence de score comme mesure de performance
+            sns.scatterplot(x=merged_football_pib['date'], y=merged_football_pib['score_diff'], color='green', label='Différence de score')
+
+            # Titre et labels
+            plt.title("Impact des Matchs de Football sur l'Économie (PIB)")
+            plt.xlabel("Année")
+            plt.ylabel("Différence de score (football) / PIB (US$)")
+            plt.legend()
+            plt.xticks(rotation=45)
+            st.pyplot(plt)
+
+            # --- Partie 2: Visualisation de la relation entre les scores de football et le PIB ---
+
+            # Créer des visualisations pour explorer la relation entre les scores de football et le PIB
+            plt.figure(figsize=(10, 6))
+
+            # Boxplot de la relation entre 'score_diff' et 'value' (PIB)
+            sns.boxplot(x='score_diff', y='value', data=merged_football_pib, palette="coolwarm")
+
+            # Violinplot de la relation entre 'value' (PIB) et 'score_diff'
+            sns.violinplot(x='value', y='score_diff', data=merged_football_pib, split=True)
+
+            plt.title("Relation entre les scores de football et la performance économique (PIB)")
+            plt.xlabel("Différence de score des matchs de football")
+            plt.ylabel("PIB (US$)")
+            plt.show()
+
 
     # ---------------------------- Événements vs Football ----------------------------
     elif option == "Événements vs Football":
@@ -590,6 +712,9 @@ elif section == "Analyse avancée":
         # Affichage dans Streamlit
         st.markdown("### Analyse des interactions des événements culturels et sportifs")
         st.plotly_chart(fig)
+
+
+  
         
    
    
@@ -681,6 +806,57 @@ elif section == "Analyse avancée":
 
             # Affichage du graphique dans Streamlit
             st.plotly_chart(fig_forecast)
+
+            # Supposons que 'event', 'football', et 'economy_pib' sont déjà des DataFrames chargés avec vos données
+
+            # --- Partie 1: Fusionner les données de Football, Événements et PIB ---
+
+            # Extraire l'année des événements et des matchs de football
+            event['year'] = pd.to_datetime(event['date']).dt.year  # Extraire l'année des événements
+            football['year'] = pd.to_datetime(football['date']).dt.year  # Extraire l'année des matchs de football
+            economy_pib['year'] = economy_pib.index.year  # Extraire l'année du PIB
+
+            # Fusionner les événements et les données économiques (PIB)
+            merged_event_pib = pd.merge(event, economy_pib[['value', 'year']], how='left', left_on='year', right_on='year')
+
+            # Calcul de 'price_mean' pour les événements (moyenne des prix si priceRanges existe)
+            merged_event_pib['price_mean'] = merged_event_pib['priceRanges'].apply(
+                lambda x: (x['min'] + x['max']) / 2 if isinstance(x, dict) else 0
+            )
+            merged_event_pib['price_mean'] = merged_event_pib['price_mean'].fillna(0)
+
+            # Fusionner les matchs de football avec les données économiques (PIB)
+            merged_football_pib = pd.merge(football, economy_pib[['value', 'year']], how='left', left_on='year', right_on='year')
+
+            # Calcul de la différence de score entre les équipes de football
+            merged_football_pib['score_diff'] = merged_football_pib['score_home_team'] - merged_football_pib['score_away_team']
+
+            # --- Partie 2: Visualisations des relations entre les données (Événements, Football et PIB) ---
+
+            # Créer une figure et définir la taille
+            plt.figure(figsize=(12, 8))           
+
+            # Graphique 3: Impact des événements passés et futurs sur le PIB
+            plt.subplot(2, 2, 3)
+            sns.lineplot(x=economy_pib.index, y=economy_pib['value'], label='PIB historique', color='blue')
+            sns.scatterplot(x=merged_event_pib['date'], y=merged_event_pib['price_mean'], color='green', label='Événements passés')
+            sns.scatterplot(x=merged_football_pib['date'], y=merged_football_pib['score_diff'], color='red', label='Football')
+            plt.title("Impact des Événements et du Football sur l'Économie (PIB)")
+            plt.xlabel("Année")
+            plt.ylabel("PIB / Score (Football / Événements)")
+            plt.legend()
+
+            # Afficher les graphiques
+            plt.tight_layout()
+            plt.xticks(rotation=45)
+            st.pyplot(plt)
+
+
+
+if section == "Vidéo de Présentation":
+    st.markdown("Le lien vers ma vidéo de présentation a été rendu et est disponible ci-dessous :")
+    st.video("https://www.youtube.com/watch?v=YHD7NUasvKo")
+
 
 
     # ---------------------------- Footer du  tableau  de bord ----------------------------
