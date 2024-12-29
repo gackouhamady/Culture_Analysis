@@ -92,7 +92,9 @@ with st.sidebar:
 # Sections
 if section == "Rapport":
     st.title("📊 Rapport du Projet ")
-    st.markdown("###  Analyse et Visualisation des Données Multi-Sectorielles : Événements, Sports et Économie")
+    st.markdown("### Sujet : Analyse et Visualisation des Données Multi-Sectorielles : Événements, Sports et Économie")
+    st.markdown("**Auteur :** Hamady GACKOU")
+    st.markdown("**Encadrant :** Francois-Xavier JOLLOIS, PhD  ")
 
     # Fournir le chemin ou le lien vers le fichier Markdown
     markdown_file_path = "README.md"  
