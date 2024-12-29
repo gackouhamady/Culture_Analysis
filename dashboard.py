@@ -108,10 +108,41 @@ with st.sidebar:
 # Homepage
 # Sections
 if section == "Rapport":
-    st.title("📊 Rapport du Projet ")
+    st.title("📊 Rapport du Projet Administration Système Linux")
+    st.markdown("""
+        <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: 2E2E2E;
+            font-weight: bold;
+        }
+        </style>
+
+        <table>
+            <tr>
+                <th>Auteur</th>
+                <td>Hamady GACKOU</td>
+            </tr>
+            <tr>
+                <th>Encadrant</th>
+                <td>Francois-Xavier JOLLOIS, PhD</td>
+            </tr>
+            <tr>
+                <th>Établissement</th>
+                <td>Université Paris Cité, UFR : Sciences fondamentales et biomédicales</td>
+            </tr>
+        </table>
+    """, unsafe_allow_html=True)
+
     st.markdown("### Sujet : Analyse et Visualisation des Données Multi-Sectorielles : Événements, Sports et Économie")
-    st.markdown("**Auteur :** Hamady GACKOU")
-    st.markdown("**Encadrant :** Francois-Xavier JOLLOIS, PhD  ")
 
     # Fournir le chemin ou le lien vers le fichier Markdown
     markdown_file_path = "README.md"  
