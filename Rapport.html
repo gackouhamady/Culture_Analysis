@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="📊-rapport-du-projet-administration-système-linux">📊 Rapport du Projet Administration Système Linux</h1>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Auteur</strong></td>
+<td>Hamady GACKOU</td>
+</tr>
+<tr>
+<td><strong>Encadrant</strong></td>
+<td>François-Xavier JOLLOIS, PhD</td>
+</tr>
+<tr>
+<td><strong>Établissement</strong></td>
+<td>Université Paris Cité, UFR : Sciences fondamentales et biomédicales</td>
+</tr>
+<tr>
+<td><strong>Programme</strong></td>
+<td>M1 : AMSD</td>
+</tr>
+<tr>
+<td><strong>Sujet</strong></td>
+<td>Analyse et Visualisation des Données Multi-Sectorielles :    Événements, Sports et Économie</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table><h1 id="table-de-matière">Table de matière</h1>
+<ul>
+<li><a href="#table-de-mati%C3%A8re">Table de matière</a>
+<ul>
+<li><a href="#probl%C3%A9matique">Problématique</a></li>
+<li><a href="#importance-du-sujet">Importance du sujet</a></li>
+<li><a href="#objectifs-concrets">Objectifs concrets</a></li>
+<li><a href="#api-utilis%C3%A9es">API utilisées</a>
+<ul>
+<li><a href="#1-ticketmaster-api">1. <strong>Ticketmaster API</strong></a></li>
+<li><a href="#2-football-data-api">2. <strong>Football Data API</strong></a></li>
+<li><a href="#3-world-bank-api">3. <strong>World Bank API</strong></a></li>
+<li><a href="#4-points-communs-entre-les-sources-de-donn%C3%A9es">4. <strong>Points communs entre les sources de données</strong></a></li>
+<li><a href="#5-volum%C3%A9trie-%C3%A0-pr%C3%A9voir-">5. <strong>Volumétrie à prévoir</strong> :</a></li>
+<li><a href="#6-limite-des-api">6. Limite des API</a>
+<ul>
+<li><a href="#ticketmaster-api-"><strong>TicketMaster API :</strong></a></li>
+<li><a href="#football-api-api-football-"><strong>Football API (API-FOOTBALL) :</strong></a></li>
+<li><a href="#world-bank-api-"><strong>World Bank API :</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#importation-et-transformation-des-donn%C3%A9es">Importation et Transformation des Données</a>
+<ul>
+<li><a href="#1-api-ticketmaster-%C3%A9v%C3%A9nements">1. API Ticketmaster (Événements)</a></li>
+<li><a href="#code-dimportation">Code d’Importation</a></li>
+<li><a href="#code-de-transformation">Code de Transformation</a></li>
+<li><a href="#2-api-football">2. API Football</a></li>
+<li><a href="#code-dimportation-1">Code d’importation</a></li>
+<li><a href="#code-de-transformation-1">Code de Transformation</a></li>
+<li><a href="#3-api-world-bank">3. API World Bank</a></li>
+<li><a href="#code-dimportation-2">Code d’importation</a></li>
+<li><a href="#code-de-transformation-2">Code de Transformation</a></li>
+</ul>
+</li>
+<li><a href="#fichier-chron-">Fichier Chron :</a></li>
+<li><a href="#cron-job---automatisation-du--fichier-chron-ci-dessus">Cron Job :  Automatisation du  fichier chron ci dessus</a></li>
+<li><a href="#exploration-de-la-base-de-donn%C3%A9es-mongodb">Exploration de la base de données MongoDB</a></li>
+<li><a href="#cron-job">Cron Job</a></li>
+<li><a href="#conception-du-tableau--de-bord-">Conception du tableau  de bord :</a>
+<ul>
+<li><a href="#outils-utilis%C3%A9s">Outils utilisés</a></li>
+</ul>
+</li>
+<li><a href="#difficult%C3%A9s-de-d%C3%A9ploiement-des-t%C3%A2ches-planifi%C3%A9es-sur-les-plateformes-de-d%C3%A9ploiement-">Difficultés de Déploiement des Tâches Planifiées sur les Plateformes de Déploiement :</a></li>
+<li><a href="#lien-du--repo-github--">Lien du  repo Github  :</a></li>
+<li><a href="#conclusion-">Conclusion :</a></li>
+<li><a href="#perspectives-">Perspectives :</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="problématique">Problématique</h2>
+<p>Comment pouvons-nous concevoir un tableau de bord temps réel intégrant des données sur les événements culturels, les performances sportives (football) et les indicateurs économiques, afin d’analyser l’interaction entre l’activité humaine, l’économie et le sport dans une zone géographique donnée ?</p>
+<h2 id="importance-du-sujet">Importance du sujet</h2>
+<p>Ce projet vise à démontrer comment des données disparates, mais interdépendantes, peuvent être collectées, analysées et visualisées en temps réel pour révéler des insights significatifs. Dans un monde où les décisions économiques, sociales et organisationnelles s’appuient de plus en plus sur des données actualisées, ce tableau de bord fournit un outil unique pour comprendre l’impact économique et social des événements culturels et sportifs.</p>
+<h2 id="objectifs-concrets">Objectifs concrets</h2>
+<ol>
+<li><strong>Centraliser et analyser des données multi-sources</strong> : Événements, performances sportives, et indicateurs économiques à partir de différentes API en temps réel.</li>
+<li><strong>Mettre en évidence les interactions potentielles</strong> : Par exemple, l’impact des événements culturels et sportifs sur les indicateurs économiques locaux, ou l’influence des performances sportives sur la popularité des équipes et leurs régions.</li>
+<li><strong>Développer un outil d’aide à la décision</strong> : Un tableau de bord visuel et interactif permettant de suivre et de prévoir les tendances, utile pour les gestionnaires d’événements, les économistes ou les autorités locales.</li>
+<li><strong>Démontrer la faisabilité technique</strong> : Validation du concept avec des scripts d’automatisation et une analyse périodique résumée dans MongoDB, tout en garantissant la pertinence et l’actualité des données affichées.</li>
+</ol>
+<h2 id="api-utilisées">API utilisées</h2>
+<h3 id="ticketmaster-api">1. <strong>Ticketmaster API</strong></h3>
+<ul>
+<li><strong>Nature</strong> : Temps réel</li>
+<li><strong>Contenu des données</strong> : Cette API fournit des informations sur les événements (concerts, festivals, événements sportifs, etc.), telles que :
+<ul>
+<li>Nom de l’événement</li>
+<li>Date et heure de l’événement</li>
+<li>Lieu (salle, stade, etc.)</li>
+<li>Ville et pays</li>
+<li>Catégorie d’événement (musique, sport, théâtre, etc.)</li>
+<li>Informations sur les billets , prix</li>
+</ul>
+</li>
+<li><strong>Périodicité</strong> : Les données sont mises à jour en temps réel, selon la disponibilité des événements et des informations mises à jour par Ticketmaster.</li>
+<li><strong>Moyen d’accès aux données</strong> :
+<ul>
+<li><strong>API</strong> : Les données sont accessibles via une API RESTful.</li>
+<li><strong>Clé API</strong> : Une clé d’API est nécessaire pour l’accès aux données. Cette clé peut être obtenue en s’inscrivant sur le site de Ticketmaster.</li>
+</ul>
+</li>
+<li><strong>Droit de réutilisation des données</strong> :
+<ul>
+<li><strong>Conditions d’utilisation</strong> : Les données sont protégées par des droits d’auteur et soumises aux conditions d’utilisation de Ticketmaster. L’utilisation des données est généralement limitée aux applications non commerciales. Pour toute utilisation commerciale (comme la revente ou la diffusion de données à des fins commerciales), une autorisation préalable de Ticketmaster est requise.</li>
+<li><strong>Restrictions</strong> : La réutilisation des données pour des projets commerciaux nécessite un accord spécifique avec Ticketmaster.</li>
+<li><strong>Volumétrie à prévoir sur une année d’utilisation</strong>:<br>
+La volumétrie dépendra du nombre d’événements suivis, mais en moyenne, cela pourrait représenter des centaines de milliers de requêtes sur une année, avec des pics lors de festivals ou événements majeurs.</li>
+</ul>
+</li>
+</ul>
+<h3 id="football-data-api">2. <strong>Football Data API</strong></h3>
+<ul>
+<li><strong>Nature</strong> : Temps réel</li>
+<li><strong>Contenu des données</strong> : Cette API fournit des données sur les compétitions de football à travers le monde. Les informations incluent :
+<ul>
+<li>Détails sur les compétitions (nom de la compétition, pays, saison)</li>
+<li>Résultats des matchs</li>
+<li>Classements des équipes</li>
+<li>Statistiques de match (score, possession, tirs, etc.)</li>
+</ul>
+</li>
+<li><strong>Périodicité</strong> : Les données sont mises à jour en temps réel ou très proche du temps réel pendant les matchs. Les résultats des matchs sont ajoutés dès qu’ils sont disponibles.</li>
+<li><strong>Moyen d’accès aux données</strong> :
+<ul>
+<li><strong>API</strong> : L’accès aux données se fait via une API RESTful.</li>
+<li><strong>Clé API</strong> : Une clé API est nécessaire pour authentifier les requêtes. Elle peut être obtenue après inscription sur le site officiel de Football Data.</li>
+</ul>
+</li>
+<li><strong>Droit de réutilisation des données</strong> :
+<ul>
+<li><strong>Conditions d’utilisation</strong> : Les données sont fournies sous des conditions d’utilisation spécifiques. En général, les données peuvent être utilisées à des fins personnelles ou académiques. Pour un usage commercial (par exemple, pour une application de paris ou une plateforme commerciale), une licence spécifique est requise.</li>
+<li><strong>Restrictions</strong> : L’utilisation des données est limitée dans un cadre non commercial, sauf si un accord commercial est obtenu avec les propriétaires des données.</li>
+</ul>
+</li>
+<li><strong>Volumétrie à prévoir sur une année d’utilisation</strong>:<br>
+Selon le nombre de compétitions suivies et la fréquence des matchs, la volumétrie pourrait être de plusieurs millions de requêtes sur l’année, surtout en période de compétitions majeures (Coupes du Monde, Ligues, etc.).</li>
+</ul>
+<h3 id="world-bank-api">3. <strong>World Bank API</strong></h3>
+<ul>
+<li><strong>Nature</strong> : Pas en temps réel (données économiques historiques)</li>
+<li><strong>Contenu des données</strong> : Cette API fournit des données économiques détaillées pour différents pays, notamment :
+<ul>
+<li>PIB par pays (en dollars constants ou courants)</li>
+<li>Indicateurs économiques comme la population, la croissance économique, les investissements, etc.</li>
+<li>Données sur la pauvreté, l’accès à l’éducation, la santé, les infrastructures, etc.</li>
+<li>Ces données couvrent plusieurs décennies, avec des mises à jour périodiques.</li>
+</ul>
+</li>
+<li><strong>Périodicité</strong> : Les données économiques sont mises à jour annuellement ou selon la publication de nouveaux rapports économiques par la Banque Mondiale.
+<ul>
+<li>Les ensembles de données peuvent couvrir des périodes comme 2013-2022, selon l’indicateur spécifique.</li>
+</ul>
+</li>
+<li><strong>Moyen d’accès aux données</strong> :
+<ul>
+<li><strong>API</strong> : L’accès aux données se fait via une API RESTful, sans nécessiter d’authentification.</li>
+<li><strong>Téléchargement</strong> : Les données peuvent également être téléchargées en format JSON ou XML pour une utilisation hors ligne.</li>
+<li><strong>Token nécessaire</strong> : Aucun token n’est nécessaire pour accéder aux données de l’API.</li>
+</ul>
+</li>
+<li><strong>Droit de réutilisation des données</strong> :
+<ul>
+<li><strong>Conditions d’utilisation</strong> : Les données sont ouvertes au public et peuvent être utilisées gratuitement, sous réserve de respect des conditions d’utilisation de la Banque Mondiale. L’attribution est obligatoire si les données sont utilisées dans des publications ou des projets.</li>
+<li><strong>Restrictions</strong> : Les données peuvent être utilisées librement dans des projets académiques, de recherche ou d’analyse. Pour un usage commercial, il est recommandé de vérifier les conditions spécifiques sur le site de la Banque Mondiale.</li>
+<li><strong>Volumétrie à prévoir sur une année d’utilisation</strong>:<br>
+La volumétrie peut être modeste, en fonction du nombre d’indicateurs suivis, avec des centaines de milliers de points de données à traiter sur l’année.</li>
+</ul>
+</li>
+</ul>
+<h3 id="points-communs-entre-les-sources-de-données">4. <strong>Points communs entre les sources de données</strong></h3>
+<ul>
+<li><strong>Accès via API</strong>: Toutes les trois API offrent un accès via des appels RESTful.</li>
+<li><strong>Données structurées en JSON</strong> : Les données sont principalement disponibles en format JSON, ce qui facilite leur traitement et leur intégration dans des applications.</li>
+<li><strong>Utilisation en temps réel ou périodique</strong> : Les deux premières API (Ticketmaster et Football Data) offrent des données mises à jour en temps réel, tandis que la troisième (World Bank) propose des données historiques mises à jour annuellement.</li>
+<li><strong>Nécessité d’une clé API pour deux</strong>: Ticketmaster et Football Data nécessitent une clé API pour accéder aux données, tandis que la Banque Mondiale permet un accès libre sans clé API.</li>
+</ul>
+<h3 id="volumétrie-à-prévoir-">5. <strong>Volumétrie à prévoir</strong> :</h3>
+<ul>
+<li><strong>Ticketmaster API</strong> : La volumétrie dépend des événements suivis, mais elle peut atteindre des centaines de milliers de requêtes par an.</li>
+<li><strong>Football Data API :</strong> En raison de la mise à jour en temps réel, cette API peut générer plusieurs millions de requêtes annuellement, selon la fréquence des matchs.</li>
+<li><strong>World Bank API</strong>: Cette API génère moins de volumétrie, mais peut contenir des centaines de milliers de points de données par an, selon les indicateurs suivis.</li>
+</ul>
+<h3 id="limite-des-api">6. Limite des API</h3>
+<h4 id="ticketmaster-api-"><strong>TicketMaster API :</strong></h4>
+<ul>
+<li>Par seconde : 5 requêtes par seconde.</li>
+<li>Par jour : 5000 requêtes par jour.</li>
+</ul>
+<h4 id="football-api-api-football-"><strong>Football API (API-FOOTBALL) :</strong></h4>
+<p>Les limites dépendent du plan d’abonnement :</p>
+<ul>
+<li>Plan Gratuit : 10 requêtes par minute.</li>
+<li>Plan Pro : 300 requêtes par minute.</li>
+<li>Plan Ultra : 450 requêtes par minute.</li>
+<li>Plan Mega : 900 requêtes par minute.</li>
+<li>Plan Personnalisé : Jusqu’à 1200 requêtes par minute3.</li>
+</ul>
+<h4 id="world-bank-api-"><strong>World Bank API :</strong></h4>
+<p>Les informations spécifiques sur les limites de l’API de la Banque Mondiale ne sont pas clairement définies, mais l’ API est conçue pour supporter un grand nombre de requêtes.</p>
+<h2 id="importation-et-transformation-des-données">Importation et Transformation des Données</h2>
+<h3 id="api-ticketmaster-événements">1. API Ticketmaster (Événements)</h3>
+<h3 id="code-dimportation">Code d’Importation</h3>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token comment"># Clé API Ticketmaster</span>
+<span class="token function">export</span> <span class="token punctuation">$(</span>grep -v <span class="token string">'^#'</span> <span class="token punctuation">..</span>/.env <span class="token operator">|</span> xargs<span class="token punctuation">)</span>
+
+API_KEY<span class="token operator">=</span><span class="token string">"<span class="token variable">$API_KEY_festival</span>"</span>
+
+<span class="token comment"># URL de base de l'API Ticketmaster</span>
+BASE_URL<span class="token operator">=</span><span class="token string">"https://app.ticketmaster.com/discovery/v2/events.json"</span>
+
+<span class="token comment"># Paramètres de la requête</span>
+START_DATE<span class="token operator">=</span><span class="token punctuation">$(</span>date -u -d <span class="token string">'8 hours ago'</span> +%Y-%m-%dT%H:%M:%SZ<span class="token punctuation">)</span>
+PARAMS<span class="token operator">=</span><span class="token string">"apikey=<span class="token variable">$API_KEY</span>&amp;sort=date,desc&amp;startDateTime=<span class="token variable">$START_DATE</span>"</span>
+
+<span class="token comment"># Nom du fichier avec date et heure</span>
+FILENAME<span class="token operator">=</span><span class="token string">"events_data_<span class="token variable"><span class="token variable">$(</span><span class="token function">date</span> +%Y%m%d_%H%M%S<span class="token variable">)</span></span>.json"</span>
+
+<span class="token comment"># Répertoire de stockage</span>
+DIRECTORY<span class="token operator">=</span><span class="token string">"part_frequent_data"</span>
+
+<span class="token comment"># Créer le répertoire s'il n'existe pas</span>
+<span class="token function">mkdir</span> -p <span class="token string">"<span class="token variable">$DIRECTORY</span>"</span>
+
+<span class="token comment"># Effectuer la requête et sauvegarder les données</span>
+curl -G <span class="token string">"<span class="token variable">$BASE_URL</span>"</span> \
+  --data-urlencode <span class="token string">"apikey=<span class="token variable">$API_KEY</span>"</span> \
+  --data-urlencode <span class="token string">"sort=date,desc"</span> \
+  --data-urlencode <span class="token string">"startDateTime=<span class="token variable">$START_DATE</span>"</span> \
+  -o <span class="token string">"<span class="token variable">$DIRECTORY</span>/<span class="token variable">$FILENAME</span>"</span>
+
+<span class="token comment"># Confirmation de l'exécution</span>
+<span class="token keyword">echo</span> <span class="token string">"Données des événements récupérées et sauvegardées dans <span class="token variable">$DIRECTORY</span>/<span class="token variable">$FILENAME</span>"</span> 
+</code></pre>
+<h3 id="code-de-transformation">Code de Transformation</h3>
+<pre class=" language-python"><code class="prism  language-python"><span class="token keyword">import</span> os
+<span class="token keyword">import</span> json
+<span class="token keyword">from</span> pymongo <span class="token keyword">import</span> MongoClient
+
+<span class="token comment"># Connexion à MongoDB</span>
+client <span class="token operator">=</span> MongoClient<span class="token punctuation">(</span><span class="token string">'mongodb+srv://hamadygackou777:root@cluster0.1lwk5.mongodb.net/'</span><span class="token punctuation">)</span>
+db <span class="token operator">=</span> client<span class="token punctuation">[</span><span class="token string">'Dashboard_Data_Science'</span><span class="token punctuation">]</span>
+collection <span class="token operator">=</span> db<span class="token punctuation">[</span><span class="token string">'event'</span><span class="token punctuation">]</span>
+
+<span class="token comment"># Répertoire contenant les fichiers JSON</span>
+directory <span class="token operator">=</span> <span class="token string">'part_frequent_data'</span>
+
+<span class="token comment"># Fonction pour extraire tous les attributs possibles</span>
+<span class="token keyword">def</span> <span class="token function">extract_attributes</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    attributes <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+    <span class="token keyword">for</span> key<span class="token punctuation">,</span> value <span class="token keyword">in</span> data<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token builtin">isinstance</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> <span class="token builtin">dict</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            nested_attributes <span class="token operator">=</span> extract_attributes<span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+            attributes<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> nested_attributes
+        <span class="token keyword">elif</span> <span class="token builtin">isinstance</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> <span class="token builtin">list</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">if</span> value <span class="token operator">and</span> <span class="token builtin">isinstance</span><span class="token punctuation">(</span>value<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token builtin">dict</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                nested_list <span class="token operator">=</span> <span class="token punctuation">[</span>extract_attributes<span class="token punctuation">(</span>item<span class="token punctuation">)</span> <span class="token keyword">for</span> item <span class="token keyword">in</span> value<span class="token punctuation">]</span>
+                attributes<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> nested_list
+            <span class="token keyword">else</span><span class="token punctuation">:</span>
+                attributes<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> value
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            <span class="token keyword">if</span> value <span class="token operator">not</span> <span class="token keyword">in</span> <span class="token punctuation">[</span><span class="token boolean">None</span><span class="token punctuation">,</span> <span class="token string">'NA'</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+                attributes<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> value
+    <span class="token keyword">return</span> attributes
+
+<span class="token comment"># Fonction pour résumer les données</span>
+<span class="token keyword">def</span> <span class="token function">summarize_data</span><span class="token punctuation">(</span>file_path<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span>file_path<span class="token punctuation">,</span> <span class="token string">'r'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token builtin">file</span><span class="token punctuation">:</span>
+        data <span class="token operator">=</span> json<span class="token punctuation">.</span>load<span class="token punctuation">(</span><span class="token builtin">file</span><span class="token punctuation">)</span>
+        
+        summary <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+        <span class="token keyword">for</span> event <span class="token keyword">in</span> data<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'_embedded'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'events'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            event_attributes <span class="token operator">=</span> extract_attributes<span class="token punctuation">(</span>event<span class="token punctuation">)</span>
+            relevant_attributes <span class="token operator">=</span> <span class="token punctuation">{</span>
+                <span class="token string">'name'</span><span class="token punctuation">:</span> event_attributes<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'name'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token string">'type'</span><span class="token punctuation">:</span> event_attributes<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'type'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token string">'dates'</span><span class="token punctuation">:</span> event_attributes<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'dates'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'start'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'localDate'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token string">'venue'</span><span class="token punctuation">:</span> event_attributes<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'_embedded'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'venues'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'name'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token string">'city'</span><span class="token punctuation">:</span> event_attributes<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'_embedded'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'venues'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'city'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'name'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token string">'country'</span><span class="token punctuation">:</span> event_attributes<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'_embedded'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'venues'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'country'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'name'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token string">'priceRanges'</span><span class="token punctuation">:</span> event_attributes<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'priceRanges'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token keyword">if</span> event_attributes<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'priceRanges'</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token boolean">None</span><span class="token punctuation">,</span>
+                <span class="token string">'sales'</span><span class="token punctuation">:</span> event_attributes<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'sales'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'public'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'startDateTime'</span><span class="token punctuation">)</span>
+            <span class="token punctuation">}</span>
+            
+            relevant_attributes <span class="token operator">=</span> <span class="token punctuation">{</span>k<span class="token punctuation">:</span> v <span class="token keyword">for</span> k<span class="token punctuation">,</span> v <span class="token keyword">in</span> relevant_attributes<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">if</span> v <span class="token keyword">is</span> <span class="token operator">not</span> <span class="token boolean">None</span><span class="token punctuation">}</span>
+            summary<span class="token punctuation">.</span>append<span class="token punctuation">(</span>relevant_attributes<span class="token punctuation">)</span>
+        
+        <span class="token keyword">return</span> summary
+
+<span class="token comment"># Parcourir les fichiers dans le répertoire</span>
+<span class="token keyword">for</span> filename <span class="token keyword">in</span> os<span class="token punctuation">.</span>listdir<span class="token punctuation">(</span>directory<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> filename<span class="token punctuation">.</span>endswith<span class="token punctuation">(</span><span class="token string">'.json'</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        file_path <span class="token operator">=</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>directory<span class="token punctuation">,</span> filename<span class="token punctuation">)</span>
+        
+        summary <span class="token operator">=</span> summarize_data<span class="token punctuation">(</span>file_path<span class="token punctuation">)</span>
+        
+        <span class="token keyword">for</span> event <span class="token keyword">in</span> summary<span class="token punctuation">:</span>
+            query <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'name'</span><span class="token punctuation">:</span> event<span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token string">'dates'</span><span class="token punctuation">:</span> event<span class="token punctuation">[</span><span class="token string">'dates'</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            update <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'$set'</span><span class="token punctuation">:</span> event<span class="token punctuation">}</span>
+            collection<span class="token punctuation">.</span>update_one<span class="token punctuation">(</span>query<span class="token punctuation">,</span> update<span class="token punctuation">,</span> upsert<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+        
+        os<span class="token punctuation">.</span>remove<span class="token punctuation">(</span>file_path<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"Données résumées et stockées dans MongoDB avec succès."</span><span class="token punctuation">)</span>
+
+</code></pre>
+<h3 id="api-football">2. API Football</h3>
+<h3 id="code-dimportation-1">Code d’importation</h3>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token comment"># Clé API de l'API-Football</span>
+<span class="token function">export</span> <span class="token punctuation">$(</span>grep -v <span class="token string">'^#'</span> <span class="token punctuation">..</span>/.env <span class="token operator">|</span> xargs<span class="token punctuation">)</span>
+
+API_KEY<span class="token operator">=</span><span class="token string">"<span class="token variable">$API_KEY_foot</span>"</span>
+
+<span class="token comment"># URL de base de l'API-Football</span>
+BASE_URL<span class="token operator">=</span><span class="token string">"https://api.football-data.org/v4/competitions"</span>
+
+<span class="token comment"># Paramètres de la requête</span>
+LEAGUE_ID<span class="token operator">=</span>2021
+START_DATE<span class="token operator">=</span><span class="token punctuation">$(</span>date -u -d <span class="token string">'30 days ago'</span> +%Y-%m-%d<span class="token punctuation">)</span>
+END_DATE<span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">date</span> -u +%Y-%m-%d<span class="token variable">)</span></span>
+
+<span class="token comment"># Nom du fichier avec date et heure</span>
+FILENAME<span class="token operator">=</span><span class="token string">"football_past_performance_<span class="token variable"><span class="token variable">$(</span><span class="token function">date</span> +%Y%m%d_%H%M%S<span class="token variable">)</span></span>.json"</span>
+
+<span class="token comment"># Répertoire de stockage</span>
+DIRECTORY<span class="token operator">=</span><span class="token string">"football_data"</span>
+
+<span class="token comment"># Créer le répertoire s'il n'existe pas</span>
+<span class="token function">mkdir</span> -p <span class="token string">"<span class="token variable">$DIRECTORY</span>"</span>
+
+<span class="token comment"># Effectuer la requête et sauvegarder les données</span>
+curl -G <span class="token string">"<span class="token variable">$BASE_URL</span>/<span class="token variable">$LEAGUE_ID</span>/matches"</span> \
+  --header <span class="token string">"X-Auth-Token: <span class="token variable">$API_KEY</span>"</span> \
+  --data-urlencode <span class="token string">"dateFrom=<span class="token variable">$START_DATE</span>"</span> \
+  --data-urlencode <span class="token string">"dateTo=<span class="token variable">$END_DATE</span>"</span> \
+  -o <span class="token string">"<span class="token variable">$DIRECTORY</span>/<span class="token variable">$FILENAME</span>"</span>
+
+<span class="token comment"># Confirmation de l'exécution</span>
+<span class="token keyword">echo</span> <span class="token string">"Données des performances sportives passées récupérées et sauvegardées dans <span class="token variable">$DIRECTORY</span>/<span class="token variable">$FILENAME</span>"</span>
+
+</code></pre>
+<h3 id="code-de-transformation-1">Code de Transformation</h3>
+<pre class=" language-python"><code class="prism  language-python"><span class="token keyword">import</span> os
+<span class="token keyword">import</span> json
+<span class="token keyword">from</span> pymongo <span class="token keyword">import</span> MongoClient
+
+<span class="token comment"># Connexion à MongoDB</span>
+client <span class="token operator">=</span> MongoClient<span class="token punctuation">(</span><span class="token string">'mongodb+srv://hamadygackou777:root@cluster0.1lwk5.mongodb.net/'</span><span class="token punctuation">)</span>
+db <span class="token operator">=</span> client<span class="token punctuation">[</span><span class="token string">'Dashboard_Data_Science'</span><span class="token punctuation">]</span>
+collection <span class="token operator">=</span> db<span class="token punctuation">[</span><span class="token string">'football_past_performance'</span><span class="token punctuation">]</span>
+
+<span class="token comment"># Répertoire contenant les fichiers JSON</span>
+directory <span class="token operator">=</span> <span class="token string">'football_data'</span>
+
+<span class="token comment"># Fonction pour résumer les données</span>
+<span class="token keyword">def</span> <span class="token function">summarize_data</span><span class="token punctuation">(</span>file_path<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span>file_path<span class="token punctuation">,</span> <span class="token string">'r'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token builtin">file</span><span class="token punctuation">:</span>
+        data <span class="token operator">=</span> json<span class="token punctuation">.</span>load<span class="token punctuation">(</span><span class="token builtin">file</span><span class="token punctuation">)</span>
+        
+        summary <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+        <span class="token keyword">for</span> match <span class="token keyword">in</span> data<span class="token punctuation">[</span><span class="token string">'matches'</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+            home_team <span class="token operator">=</span> match<span class="token punctuation">[</span><span class="token string">'homeTeam'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span>
+            away_team <span class="token operator">=</span> match<span class="token punctuation">[</span><span class="token string">'awayTeam'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span>
+            winner <span class="token operator">=</span> match<span class="token punctuation">[</span><span class="token string">'score'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'winner'</span><span class="token punctuation">]</span>
+            
+            <span class="token keyword">if</span> winner <span class="token operator">==</span> <span class="token string">'HOME_TEAM'</span><span class="token punctuation">:</span>
+                performance_home_team <span class="token operator">=</span> <span class="token string">'winner'</span>
+                performance_away_team <span class="token operator">=</span> <span class="token string">'loser'</span>
+            <span class="token keyword">elif</span> winner <span class="token operator">==</span> <span class="token string">'AWAY_TEAM'</span><span class="token punctuation">:</span>
+                performance_home_team <span class="token operator">=</span> <span class="token string">'loser'</span>
+                performance_away_team <span class="token operator">=</span> <span class="token string">'winner'</span>
+            <span class="token keyword">else</span><span class="token punctuation">:</span>
+                performance_home_team <span class="token operator">=</span> <span class="token string">'draw'</span>
+                performance_away_team <span class="token operator">=</span> <span class="token string">'draw'</span>
+            
+            summary<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token punctuation">{</span>
+                <span class="token string">'home_team'</span><span class="token punctuation">:</span> home_team<span class="token punctuation">,</span>
+                <span class="token string">'away_team'</span><span class="token punctuation">:</span> away_team<span class="token punctuation">,</span>
+                <span class="token string">'date'</span><span class="token punctuation">:</span> match<span class="token punctuation">[</span><span class="token string">'utcDate'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                <span class="token string">'status'</span><span class="token punctuation">:</span> match<span class="token punctuation">[</span><span class="token string">'status'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                <span class="token string">'competition'</span><span class="token punctuation">:</span> match<span class="token punctuation">[</span><span class="token string">'competition'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                <span class="token string">'score_home_team'</span><span class="token punctuation">:</span> match<span class="token punctuation">[</span><span class="token string">'score'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'fullTime'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'home'</span><span class="token punctuation">,</span> <span class="token string">'NA'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token string">'score_away_team'</span><span class="token punctuation">:</span> match<span class="token punctuation">[</span><span class="token string">'score'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'fullTime'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'away'</span><span class="token punctuation">,</span> <span class="token string">'NA'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token string">'performance_home_team'</span><span class="token punctuation">:</span> performance_home_team<span class="token punctuation">,</span>
+                <span class="token string">'performance_away_team'</span><span class="token punctuation">:</span> performance_away_team
+            <span class="token punctuation">}</span><span class="token punctuation">)</span>
+        
+        <span class="token keyword">return</span> summary
+
+<span class="token comment"># Parcourir les fichiers dans le répertoire</span>
+<span class="token keyword">for</span> filename <span class="token keyword">in</span> os<span class="token punctuation">.</span>listdir<span class="token punctuation">(</span>directory<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> filename<span class="token punctuation">.</span>endswith<span class="token punctuation">(</span><span class="token string">'.json'</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        file_path <span class="token operator">=</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>directory<span class="token punctuation">,</span> filename<span class="token punctuation">)</span>
+        
+        summary <span class="token operator">=</span> summarize_data<span class="token punctuation">(</span>file_path<span class="token punctuation">)</span>
+        
+        <span class="token keyword">for</span> match <span class="token keyword">in</span> summary<span class="token punctuation">:</span>
+            query <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'home_team'</span><span class="token punctuation">:</span> match<span class="token punctuation">[</span><span class="token string">'home_team'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token string">'away_team'</span><span class="token punctuation">:</span> match<span class="token punctuation">[</span><span class="token string">'away_team'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token string">'date'</span><span class="token punctuation">:</span> match<span class="token punctuation">[</span><span class="token string">'date'</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            update <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'$set'</span><span class="token punctuation">:</span> match<span class="token punctuation">}</span>
+            collection<span class="token punctuation">.</span>update_one<span class="token punctuation">(</span>query<span class="token punctuation">,</span> update<span class="token punctuation">,</span> upsert<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+        
+        os<span class="token punctuation">.</span>remove<span class="token punctuation">(</span>file_path<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"Données résumées et stockées dans MongoDB avec succès."</span><span class="token punctuation">)</span>
+
+</code></pre>
+<h3 id="api-world-bank">3. API World Bank</h3>
+<h3 id="code-dimportation-2">Code d’importation</h3>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+WORLD_BANK_URL<span class="token operator">=</span><span class="token string">"http://api.worldbank.org/v2/country/all/indicator/NY.GDP.MKTP.CD?date=2013:2022&amp;format=json&amp;per_page=10000"</span>
+
+ECON_DIRECTORY<span class="token operator">=</span><span class="token string">"economic_data"</span>
+
+<span class="token function">mkdir</span> -p <span class="token string">"<span class="token variable">$ECON_DIRECTORY</span>"</span>   
+
+PAGE<span class="token operator">=</span>1
+TOTAL_PAGES<span class="token operator">=</span>1
+COUNT<span class="token operator">=</span>0
+
+<span class="token keyword">while</span> <span class="token punctuation">[</span> <span class="token variable">$PAGE</span> -le <span class="token variable">$TOTAL_PAGES</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">do</span>
+  RESPONSE<span class="token operator">=</span><span class="token punctuation">$(</span>curl -s <span class="token string">"<span class="token variable">$WORLD_BANK_URL</span>&amp;page=<span class="token variable">$PAGE</span>"</span><span class="token punctuation">)</span>
+  TOTAL_PAGES<span class="token operator">=</span><span class="token punctuation">$(</span>echo <span class="token variable">$RESPONSE</span> <span class="token operator">|</span> jq <span class="token string">'.[0].totalPages // 1'</span><span class="token punctuation">)</span>
+  DATA<span class="token operator">=</span><span class="token punctuation">$(</span>echo <span class="token variable">$RESPONSE</span> <span class="token operator">|</span> jq <span class="token string">'.[1]'</span><span class="token punctuation">)</span>
+  
+  <span class="token keyword">while</span> <span class="token punctuation">[</span> <span class="token punctuation">$(</span>echo <span class="token variable">$DATA</span> <span class="token operator">|</span> jq <span class="token string">'length'</span><span class="token punctuation">)</span> -gt 0 <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">do</span>
+    PART<span class="token operator">=</span><span class="token punctuation">$(</span>echo <span class="token variable">$DATA</span> <span class="token operator">|</span> jq <span class="token string">'.[0:1000]'</span><span class="token punctuation">)</span>
+    DATA<span class="token operator">=</span><span class="token punctuation">$(</span>echo <span class="token variable">$DATA</span> <span class="token operator">|</span> jq <span class="token string">'.[1000:]'</span><span class="token punctuation">)</span>
+    COUNT<span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>COUNT <span class="token operator">+</span> <span class="token number">1</span><span class="token variable">))</span></span>
+    FILENAME<span class="token operator">=</span><span class="token string">"world_bank_data_<span class="token variable"><span class="token variable">$(</span><span class="token function">date</span> +%Y%m%d_%H%M%S<span class="token variable">)</span></span>_part_<span class="token variable">$COUNT</span>.json"</span>
+    <span class="token keyword">echo</span> <span class="token variable">$PART</span> <span class="token operator">&gt;</span> <span class="token string">"<span class="token variable">$ECON_DIRECTORY</span>/<span class="token variable">$FILENAME</span>"</span>
+  <span class="token keyword">done</span>
+
+  PAGE<span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>PAGE <span class="token operator">+</span> <span class="token number">1</span><span class="token variable">))</span></span>
+<span class="token keyword">done</span>
+
+</code></pre>
+<h3 id="code-de-transformation-2">Code de Transformation</h3>
+<pre class=" language-python"><code class="prism  language-python"><span class="token keyword">import</span> os
+<span class="token keyword">import</span> json
+<span class="token keyword">from</span> pymongo <span class="token keyword">import</span> MongoClient
+<span class="token keyword">import</span> pandas <span class="token keyword">as</span> pd
+
+<span class="token comment"># Connexion à MongoDB</span>
+client <span class="token operator">=</span> MongoClient<span class="token punctuation">(</span><span class="token string">'mongodb+srv://hamadygackou777:root@cluster0.1lwk5.mongodb.net/'</span><span class="token punctuation">)</span>
+db <span class="token operator">=</span> client<span class="token punctuation">[</span><span class="token string">'Dashboard_Data_Science'</span><span class="token punctuation">]</span>
+collection <span class="token operator">=</span> db<span class="token punctuation">[</span><span class="token string">'economic_data'</span><span class="token punctuation">]</span>
+
+<span class="token comment"># Répertoire contenant les fichiers JSON</span>
+directory <span class="token operator">=</span> <span class="token string">'economic_data'</span>
+
+<span class="token comment"># Fonction pour transformer les données en DataFrame</span>
+<span class="token keyword">def</span> <span class="token function">process_economic_data</span><span class="token punctuation">(</span>file_path<span class="token punctuation">)</span><span class="token punctuation">:</span>
+   <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span>file_path<span class="token punctuation">,</span> <span class="token string">'r'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token builtin">file</span><span class="token punctuation">:</span>
+       data <span class="token operator">=</span> json<span class="token punctuation">.</span>load<span class="token punctuation">(</span><span class="token builtin">file</span><span class="token punctuation">)</span>
+       
+       records <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+       <span class="token keyword">for</span> record <span class="token keyword">in</span> data<span class="token punctuation">:</span>
+           records<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token punctuation">{</span>
+               <span class="token string">'country'</span><span class="token punctuation">:</span> record<span class="token punctuation">[</span><span class="token string">'country'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'value'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+               <span class="token string">'indicator'</span><span class="token punctuation">:</span> record<span class="token punctuation">[</span><span class="token string">'indicator'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'value'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+               <span class="token string">'value'</span><span class="token punctuation">:</span> record<span class="token punctuation">[</span><span class="token string">'value'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+               <span class="token string">'date'</span><span class="token punctuation">:</span> record<span class="token punctuation">[</span><span class="token string">'date'</span><span class="token punctuation">]</span>
+           <span class="token punctuation">}</span><span class="token punctuation">)</span>
+       
+       <span class="token keyword">return</span> pd<span class="token punctuation">.</span>DataFrame<span class="token punctuation">(</span>records<span class="token punctuation">)</span>
+
+<span class="token comment"># Fonction pour insérer les données dans MongoDB</span>
+<span class="token keyword">def</span> <span class="token function">insert_data_to_mongo</span><span class="token punctuation">(</span>dataframe<span class="token punctuation">)</span><span class="token punctuation">:</span>
+   <span class="token keyword">for</span> _<span class="token punctuation">,</span> row <span class="token keyword">in</span> dataframe<span class="token punctuation">.</span>iterrows<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+       record <span class="token operator">=</span> row<span class="token punctuation">.</span>to_dict<span class="token punctuation">(</span><span class="token punctuation">)</span>
+       collection<span class="token punctuation">.</span>update_one<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">'country'</span><span class="token punctuation">:</span> record<span class="token punctuation">[</span><span class="token string">'country'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token string">'indicator'</span><span class="token punctuation">:</span> record<span class="token punctuation">[</span><span class="token string">'indicator'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token string">'date'</span><span class="token punctuation">:</span> record<span class="token punctuation">[</span><span class="token string">'date'</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span> 
+                             <span class="token punctuation">{</span><span class="token string">'$set'</span><span class="token punctuation">:</span> record<span class="token punctuation">}</span><span class="token punctuation">,</span> upsert<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Parcourir les fichiers dans le répertoire</span>
+<span class="token keyword">for</span> filename <span class="token keyword">in</span> os<span class="token punctuation">.</span>listdir<span class="token punctuation">(</span>directory<span class="token punctuation">)</span><span class="token punctuation">:</span>
+   <span class="token keyword">if</span> filename<span class="token punctuation">.</span>endswith<span class="token punctuation">(</span><span class="token string">'.json'</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+       file_path <span class="token operator">=</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>directory<span class="token punctuation">,</span> filename<span class="token punctuation">)</span>
+       
+       df <span class="token operator">=</span> process_economic_data<span class="token punctuation">(</span>file_path<span class="token punctuation">)</span>
+       insert_data_to_mongo<span class="token punctuation">(</span>df<span class="token punctuation">)</span>
+       
+       os<span class="token punctuation">.</span>remove<span class="token punctuation">(</span>file_path<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"Données économiques traitées et stockées dans MongoDB avec succès."</span><span class="token punctuation">)</span>
+
+</code></pre>
+<h2 id="fichier-chron-">Fichier Chron :</h2>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token comment"># Arrête le script en cas d'erreur</span>
+<span class="token keyword">set</span> -e
+ 
+<span class="token comment"># Exécution des scripts Bash</span>
+
+<span class="token comment"># Vérifie et exécute le script event_bash.sh</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> -d <span class="token string">"event"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token function">cd</span> event
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> -f <span class="token string">"event_bash.sh"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+        <span class="token function">bash</span> event_bash.sh
+    <span class="token keyword">else</span>
+        <span class="token keyword">echo</span> <span class="token string">"Erreur : le script 'event_bash.sh' est introuvable dans le répertoire 'event'."</span>
+        <span class="token keyword">exit</span> 1
+    <span class="token keyword">fi</span>
+    <span class="token function">cd</span> <span class="token punctuation">..</span>
+<span class="token keyword">else</span>
+    <span class="token keyword">echo</span> <span class="token string">"Erreur : le répertoire 'event' n'existe pas."</span>
+    <span class="token keyword">exit</span> 1
+<span class="token keyword">fi</span>
+
+<span class="token comment"># Vérifie et exécute le script performance_sportive_bash.sh</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> -d <span class="token string">"football"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token function">cd</span> football
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> -f <span class="token string">"performance_sportive_bash.sh"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+        <span class="token function">bash</span> performance_sportive_bash.sh
+    <span class="token keyword">else</span>
+        <span class="token keyword">echo</span> <span class="token string">"Erreur : le script 'performance_sportive_bash.sh' est introuvable dans le répertoire 'football'."</span>
+        <span class="token keyword">exit</span> 1
+    <span class="token keyword">fi</span>
+    <span class="token function">cd</span> <span class="token punctuation">..</span>
+<span class="token keyword">else</span>
+    <span class="token keyword">echo</span> <span class="token string">"Erreur : le répertoire 'football' n'existe pas."</span>
+    <span class="token keyword">exit</span> 1
+<span class="token keyword">fi</span>
+
+<span class="token function">sleep</span> 10
+
+<span class="token comment"># Exécution des scripts Python</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> -d <span class="token string">"event"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token function">cd</span> event
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> -f <span class="token string">"summarize_event.py"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+        python summarize_event.py
+    <span class="token keyword">else</span>
+        <span class="token keyword">echo</span> <span class="token string">"Erreur : le script 'summarize_event.py' est introuvable dans le répertoire 'event'."</span>
+        <span class="token keyword">exit</span> 1
+    <span class="token keyword">fi</span>
+    <span class="token function">cd</span> <span class="token punctuation">..</span>
+<span class="token keyword">else</span>
+    <span class="token keyword">echo</span> <span class="token string">"Erreur : le répertoire 'event' n'existe pas."</span>
+    <span class="token keyword">exit</span> 1
+<span class="token keyword">fi</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">[</span> -d <span class="token string">"football"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token function">cd</span> football
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> -f <span class="token string">"summarize_performance_sportive.py"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+        python summarize_performance_sportive.py
+    <span class="token keyword">else</span>
+        <span class="token keyword">echo</span> <span class="token string">"Erreur : le script 'summarize_performance_sportive.py' est introuvable dans le répertoire 'football'."</span>
+        <span class="token keyword">exit</span> 1
+    <span class="token keyword">fi</span>
+    <span class="token function">cd</span> <span class="token punctuation">..</span>
+<span class="token keyword">else</span>
+    <span class="token keyword">echo</span> <span class="token string">"Erreur : le répertoire 'football' n'existe pas."</span>
+    <span class="token keyword">exit</span> 1
+<span class="token keyword">fi</span>
+
+<span class="token comment"># Obtenir la date et l'heure actuelles</span>
+now<span class="token operator">=</span><span class="token punctuation">$(</span>date +<span class="token string">"%Y-%m-%d %H:%M:%S"</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Définir l'objet de l'e-mail</span>
+email_subject<span class="token operator">=</span><span class="token string">"Email du <span class="token variable">$now</span>"</span>
+
+<span class="token comment"># Définir le corps de l'e-mail</span>
+email_body<span class="token operator">=</span><span class="token string">"Salut,\n\nCeci est votre tâche planifiée qui fonctionne .\n\nCordialement."</span>
+
+<span class="token comment"># M'envoyer un email à  chaque execution de la tache cron </span>
+<span class="token keyword">echo</span> -e <span class="token string">"Subject: <span class="token variable">$email_subject</span>\n\n<span class="token variable">$email_body</span>"</span> <span class="token operator">|</span> msmtp --from<span class="token operator">=</span><span class="token string">"Hamady GACKOU"</span> -a default hamadygackou777@gmail.com
+
+</code></pre>
+<h2 id="cron-job---automatisation-du--fichier-chron-ci-dessus">Cron Job :  Automatisation du  fichier chron ci dessus</h2>
+<p>0 */3 * * *   <a href="http://crontab.sh">crontab.sh</a> &gt;&gt;  cron.log 2&gt;&amp;1</p>
+<h2 id="exploration-de-la-base-de-données-mongodb">Exploration de la base de données MongoDB</h2>
+<p>Pour explorer la base de données, il faut télécharger MongoDB Compass et se connecter à la base avec ce lien :<br>
+<code>mongodb+srv://&lt;db_username&gt;:&lt;db_password&gt;@cluster0.1lwk5.mongodb.net/</code></p>
+<ul>
+<li><strong>db_username</strong> : <code>user</code></li>
+<li><strong>db_password</strong> : <code>user</code></li>
+</ul>
+<h2 id="cron-job">Cron Job</h2>
+<ul>
+<li>0 */3 * * * /path/vers/crontab.sh</li>
+</ul>
+<h2 id="conception-du-tableau--de-bord-">Conception du tableau  de bord :</h2>
+<h3 id="outils-utilisés">Outils utilisés</h3>
+<p>Pour ce projet, j’ai utilisé une combinaison d’outils modernes afin de concevoir un tableau de bord interactif, performant et robuste  :</p>
+<ul>
+<li><strong>Streamlit</strong> : Framework principal pour créer une interface utilisateur intuitive et interactive, adaptée à l’analyse de données multi-sources en temps réel.</li>
+<li><strong>Pandas</strong> : Manipulation, nettoyage et transformation des données pour garantir leur qualité avant analyse.</li>
+<li><strong>Plotly</strong> : Génération de visualisations dynamiques et interactives, telles que des graphiques et des cartes géographiques.</li>
+<li><strong>Pymongo</strong> : Connexion et extraction des données depuis MongoDB pour intégrer des informations actualisées dans le tableau de bord.</li>
+<li><strong>Sklearn</strong> : Implémentation de modèles de machine learning pour la détection d’anomalies et la prédiction des tendances.</li>
+</ul>
+<p>Ces outils m’ont permis de combiner analyse, visualisation et interactivité, répondant ainsi aux objectifs de ce projet ambitieux.</p>
+<h2 id="difficultés-de-déploiement-des-tâches-planifiées-sur-les-plateformes-de-déploiement-">Difficultés de Déploiement des Tâches Planifiées sur les Plateformes de Déploiement :</h2>
+<p>J’attire l’attention sur le fait que l’exécution de tâches planifiées via des scripts bash a été compromise par les limitations de Streamlit Cloud, qui ne prend pas en charge les tâches cron. Je souligne également que, bien que Heroku ait été envisagé comme solution, son recours à des dynos payants dépassait les contraintes de mon budget. Les tâches cron ne sont donc pas fonctionnelles sur le serveur utilisé pour mon déploiement, Streamlit Cloud.</p>
+<h2 id="lien-du--repo-github--">Lien du  repo Github  :</h2>
+<p><a href="https://github.com/gackouhamady/Culture_Analysis">https://github.com/gackouhamady/Culture_Analysis</a></p>
+<ul>
+<li>NB : Pour un test en local, pour tout problème lié aux bibliothèques, vous pouvez installer un environnement virtuel Python et faire fonctionner les scripts  .</li>
+</ul>
+<h2 id="conclusion-">Conclusion :</h2>
+<p>Ce projet de tableau de bord en temps réel a permis d’intégrer et d’analyser des données provenant de diverses sources, telles que les événements culturels, les performances sportives et les indicateurs économiques. Grâce à des outils comme Streamlit, Pandas, Plotly, Pymongo et Sklearn, nous avons pu créer une interface interactive et intuitive, offrant des insights précieux sur l’impact des événements sur l’économie locale.</p>
+<h2 id="perspectives-">Perspectives :</h2>
+<p>Pour l’avenir, nous pourrions élargir les sources de données, améliorer les modèles prédictifs, personnaliser davantage l’interface utilisateur, intégrer des analyses géospatiales avancées, ajouter des fonctionnalités de collaboration et connecter le tableau de bord à d’autres systèmes d’information pour automatiser les flux de travail. Ces améliorations rendront l’outil encore plus utile pour les gestionnaires d’événements, les économistes et les autorités locales.</p>
+</div>
+</body>
+
+</html>
