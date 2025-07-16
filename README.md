@@ -1,5 +1,4 @@
-# Tableau de bord  : Culture, Sport & Économie
-# Synthèse des Données Multi-Sources en Temps Réel : 
+# Synthèse des Données Multi-Sources en Temps Réel 
 
 - [Synthèse des Données Multi-Sources en Temps Réel](#synthèse-des-données-multi-sources-en-temps-réel)
     ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
